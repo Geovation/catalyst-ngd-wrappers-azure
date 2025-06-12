@@ -9,7 +9,7 @@ from marshmallow import Schema, INCLUDE, EXCLUDE
 from marshmallow.fields import Integer, String, Boolean, List
 from marshmallow.exceptions import ValidationError
 
-from NGD_API_Wrappers import *
+from catalyst_ngd_wrappers import *
 
 if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     configure_azure_monitor()
