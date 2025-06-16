@@ -133,6 +133,7 @@ def http_latest_single_col(req: HttpRequest) -> HttpResponse:
 
 
 def delistify(params: dict) -> None:
+    '''Converts list parameters in the params dictionary to single values.'''
     for k, v in params.items():
         if k != 'collection':
             params[k] = v[0]
