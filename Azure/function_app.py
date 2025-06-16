@@ -12,7 +12,6 @@ from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 
 from catalyst_ngd_wrappers import *
-###THESE AREN'T IMPORTING
 
 if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     configure_azure_monitor()
