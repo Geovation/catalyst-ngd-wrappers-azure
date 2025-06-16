@@ -150,6 +150,7 @@ def construct_response(
     '''
 
     try:
+        # Handle incorrect HTTP methods
         if req.method != 'GET':
             code = 405
             error_body = json.dumps({
@@ -163,15 +164,16 @@ def construct_response(
                 status_code=code
             )
 
+        # Load the schema and parse the request parameters
         schema = schema_class()
-        collection = req.route_params.get('collection')
+        multi_collection = isinstance(schema, ColSchema)
 
         params = {**req.params}
-
-        if not (collection):
+        if multi_collection:
             col = params.get('collection')
             if col:
-                params['collection'] = params.get('collection').split(',')
+                params['collection'] = col.split(',')
+
         try:
             parsed_params = schema.load(params)
         except ValidationError as e:
@@ -192,8 +194,8 @@ def construct_response(
             for k in schema.fields.keys()
             if k in parsed_params
         }
-        if collection:
-            custom_params['collection'] = collection
+        if not multi_collection:
+            custom_params['collection'] = req.route_params.get('collection')
 
         headers = req.headers.__dict__.get('__http_headers__')
         data = func_(
@@ -219,6 +221,7 @@ def construct_response(
             mimetype="application/json"
         )
     except Exception as e:
+        raise e
         code = 500
         error_string = str(e)
         error_response = json.dumps({
