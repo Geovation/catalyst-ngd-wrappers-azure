@@ -1,6 +1,5 @@
 from marshmallow import Schema, INCLUDE, EXCLUDE
 from marshmallow.fields import Integer, String, Boolean, List
-from marshmallow.validate import Length
 
 class LatestCollectionsSchema(Schema):
     '''Schema for the latest collections endpoint'''
@@ -41,10 +40,7 @@ class GeomSchema(AbstractHierarchicalSchema):
 
 class ColSchema(AbstractHierarchicalSchema):
     '''col is a list of collections to query'''
-    collection = List(
-        String(),
-        required=True
-    )
+    collection = List(String(), required=True)
 
 
 class LimitGeomSchema(LimitSchema, GeomSchema):
