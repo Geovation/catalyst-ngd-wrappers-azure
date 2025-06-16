@@ -1,81 +1,24 @@
+import os
 import json
+
 import azure.functions as func
 
 from azure.functions import HttpRequest, HttpResponse
 from azure.monitor.opentelemetry import configure_azure_monitor
 from azure.monitor.events.extension import track_event
 
-from marshmallow import Schema, INCLUDE, EXCLUDE
-from marshmallow.fields import Integer, String, Boolean, List
 from marshmallow.exceptions import ValidationError
+from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema, \
+    ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 
 from catalyst_ngd_wrappers import *
+###THESE AREN'T IMPORTING
 
 if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     configure_azure_monitor()
 
 LOG_REQUEST_DETAILS: bool = os.environ.get('LOG_REQUEST_DETAILS', 'True') == 'True'
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
-
-class LatestCollectionsSchema(Schema):
-    '''Schema for the latest collections endpoint'''
-    flag_recent_updates = Boolean(data_key='flag-recent-updates', required=False)
-    recent_update_days = Integer(data_key='recent-update-days', required=False)
-
-    class Meta:
-        '''Exclude unknown/extra fields'''
-        unknown = EXCLUDE
-
-
-class BaseSchema(Schema):
-    '''Base schema for all queries'''
-    wkt = String(required=False)
-    use_latest_collection = Boolean(data_key='use-latest-collection', required=False)
-    access_token = String(data_key='access-token', required=False)
-
-    class Meta:
-        '''Allows additional fields to pass through to query_params'''
-        unknown = INCLUDE  # Allows additional fields to pass through to query_params
-
-
-class AbstractHierarchicalSchema(BaseSchema):
-    '''Abstract schema for hierarchical queries'''
-    hierarchical_output = Boolean(data_key='hierarchical-output', required=False)
-
-
-class LimitSchema(BaseSchema):
-    '''limit is the maximum number of items to return'''
-    limit = Integer(required=False)
-    request_limit = Integer(data_key='request-limit', required=False)
-
-
-class GeomSchema(AbstractHierarchicalSchema):
-    '''wkt is a well-known text representation of a geometry'''
-    wkt = String(required=True)
-
-
-class ColSchema(AbstractHierarchicalSchema):
-    '''col is a list of collections to query'''
-    collection = List(String(), required=True)
-
-
-class LimitGeomSchema(LimitSchema, GeomSchema):
-    '''Combining Limit and Geom schemas'''
-    wkt = String(required=True)
-
-
-class LimitColSchema(LimitSchema, ColSchema):
-    '''Combining Limit and Col schemas'''
-
-
-class GeomColSchema(GeomSchema, ColSchema):
-    '''Combining Geom and Col schemas'''
-    wkt = String(required=True)
-
-
-class LimitGeomColSchema(LimitSchema, GeomSchema, ColSchema):
-    '''Combining Limit, Geom and Col schemas'''
-    wkt = String(required=True)
 
 
 @app.function_name('http_latest_collections')
@@ -195,7 +138,15 @@ def delistify(params: dict) -> None:
             params[k] = v[0]
 
 
-def construct_response(req: HttpRequest, schema_class: type, func: callable) -> HttpResponse:
+def construct_response(
+    req: HttpRequest,
+    schema_class: type,
+    func_: callable
+) -> HttpResponse:
+    '''
+    Translates the request headers and path and query parameters into a function call.
+    Translates the function response into an HTTP response, handling errors and telemetry.
+    '''
 
     try:
         if req.method != 'GET':
@@ -244,7 +195,7 @@ def construct_response(req: HttpRequest, schema_class: type, func: callable) -> 
             custom_params['collection'] = collection
 
         headers = req.headers.__dict__.get('__http_headers__')
-        data = func(
+        data = func_(
             query_params=parsed_params,
             headers=headers,
             **custom_params
