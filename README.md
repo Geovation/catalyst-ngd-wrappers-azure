@@ -11,18 +11,7 @@
 ***Chart specifying valid orders to "chain" different wrapper functions/extensions together***
 
 - _Subtitles specifying the naming convention and ordering for python function names, and the corresponding final component of API paths_
-
-- _Eg. the api url which combines OAuth2, the feature limit exentension, and the multiple collections extension will finish .../items/auth-limit-col?..._
-
-```mermaid
-graph TD
-    A[OAuth2_manager<br><em>auth</em>] --> B[feature_limit_extension<br><em>limit</em>]
-    A --> C[multigeometry_search_extension<br><em>geom</em>]
-    A --> D[multiple_collections_extension<br><em>col</em>]
-    B --> C
-    B --> D
-    C --> D
-```
+- _Eg. the api url which combines the feature limit exentension, and the multiple collections extension will finish .../items/limit-col?..._
 
 # API Documentation
 
@@ -30,7 +19,17 @@ graph TD
 
 - All the Catalyst APIs extend the core functionality of GET request for items using the OS NGD API - Features
     - The endpoint for this API is https://api.os.uk/features/ngd/ofa/v1/collections/{collectionId}/items
-    - Documentation for the API can be found on the [OS Data Hub](https://osdatahub.os.uk/docs/ofa/overview) and on the [Gitbook docs for the National Geographic Database (NGD)](https://docs.os.uk/osngd/accessing-os-ngd/access-the-os-ngd-api/os-ngd-api-features/technical-specification)
+    - Documentation for the API can be found on the [Gitbook docs for the National Geographic Database (NGD)](https://docs.os.uk/osngd/accessing-os-ngd/access-the-os-ngd-api/os-ngd-api-features/technical-specification)
+
+## Authentication
+- **API Key**
+    - Requests can be authenticated using all the [OS NGD API - Features authentication methods](https://docs.os.uk/os-apis/core-concepts/authentication) (keys and access tokens). The methods are:
+        - OAuth2 bearer token
+        - HTTP Header key
+        - HTTP Query Parameter key
+- **OAuth2 Environment Variables**
+    - If CLIENT_ID and CLIENT_SECRET are set as environment variables, the API handles OAuth2 authentication automatically, generating and reusing access tokens until they expire.
+    - CLIENT_ID should be set as the Project API Key value, and CLIENT_SECRET should be set as the Project API Secret value
 
 ## Request Specifications
 - **Path Parameters**
@@ -45,10 +44,10 @@ graph TD
     - **filter-lang**: str
     - **limit**: int
         - This can exceed the usual cap of 100 when the _limit_ extension is applied.
-        - **${\color{red}IMPORTANT}$**: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
+        - IMPORTANT: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
         The total number of features returned could therefore be much higher.
         - When used in conjunction with _request-limit_, the lower cap is applied.
-        - **${\color{red}Note}$**: When used with _geom_ extension, the number of features returned per _geom_ could be lower than _limit_ in some cases.
+        - NOTE: When used with _geom_ extension, the number of features returned per _geom_ could be lower than _limit_ in some cases.
         This is because, if features overlap multiple search areas, duplicates are removed after the limit is reached.
     - **offset**: int - Not available when used with the _limit_ extension 
 - **Additional Catalyst Query Parameters**
@@ -60,7 +59,7 @@ graph TD
     Make sure that _filter-crs_ is set to the appropriate value.
     - **use-latest-collection** (bool, default False) - If True, it ensures that if a specific version of a collection is not supplied (eg. "bld-fts-building<s>-2</s>"), the latest version is used. If _use-latest-collection=True_ but the given collection does include a version, the specified version is always used regardless.
     - **request-limit**: int (default 50) - the number of OS NGD Feature requests at which to cap the Catalyst request. Consider [pricing](https://osdatahub.os.uk/plans).
-        - ${\color{red}IMPORTANT}$: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
+        - IMPORTANT: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
         The total number of features returned could therefore be much higher.
         - When used in conjunction with _limit_, the lower cap is applied.
     - **hierarchical-output**: bool, default False - If True, then results are returned in a hierarchical structure of GeoJSONs according to collection and/or search area, when the _col_ and _geom_ extensions are applied respectively.
@@ -113,7 +112,7 @@ graph TD
 
 |Extension|Extra Query Parameters|Description|Notes & Constaints|
 |---|---|---|---|
-|**_all of below_**|wkt, use-latest-collection|Basic wrapper for OS NGD API - Features, with some extra query parameters.||
+|**_all of below_**|wkt, use-latest-collection|Basic wrapper for OS NGD API - Features, with some extra query parameters, and automatic OAuth2 authentication handling through environment variables.||
 |**limit**|request-limit|Extends the maximum number of features returned above the default maximum 100 by looping through multiple OS NGD API - Features requests.|Default value of 50. This can be increased manually. When _request-limit_ and _limit_ are both supplied, the lower constraint is applied. When combined with _geom_ and/or _col_, the limit applies <ins>per search area, per collection.</ins>|
 |**geom**|hierarchical-output|An alternative means of returning OS NGD features for a search area which is a Multi-Geometry (MultiPoint, MultiLinestring, MultiPolygon, or GeometryCollection), which will in some cases improve speed, performance, and prevent the call from timing out. Each geometry is assigned a "searchAreaNumber", and each search area is searched in turn for features, with the search area numbers returned in feature properties, and as feature metadata.|When a feature overlaps with multiple search areas, it is returned once when _hierarchical-output=Flalse_, with searchAreaNumber returning a list. When _hierarchial-output=True_, the feature is repeated in the output for each search area.|
 |**col**|hierarchical-output, collections|Enables multiple OS NGD collections to be searched at once. Each collection value supplied as query parameters is searched in turn for features, with the collection returned in feature properties, and as feature metadata.|{collectionId} path parameter must be "multi-collection". When combined with the _geom_ extension, requests are subdivided into collections first, and then into search areas.|
