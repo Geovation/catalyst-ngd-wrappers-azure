@@ -1,10 +1,8 @@
-import os
 import json
 
 import azure.functions as func
 
 from azure.functions import HttpRequest, HttpResponse
-from azure.monitor.opentelemetry import configure_azure_monitor
 from azure.monitor.events.extension import track_event
 
 from marshmallow.exceptions import ValidationError
@@ -13,12 +11,8 @@ from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema
 
 from catalyst_ngd_wrappers import *
 
-if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
-    configure_azure_monitor()
 
-LOG_REQUEST_DETAILS: bool = os.environ.get('LOG_REQUEST_DETAILS', 'True') == 'True'
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
-
 
 @app.function_name('http_latest_collections')
 @app.route("catalyst/features/latest-collections")
