@@ -83,15 +83,15 @@
     For error responses (all except 200), the 'errorSource' attribute specifies whether the error was thrown from the OS NGD API, or from the surrounding Catalyst wrapper.
     | Response Code | Description   |
     |---------------|-------------------------------------------------------------------------------------------------------|
-    | **200$${\color{green}200}✓$$**       | A list of features in a feature collection, or a hierarchical dictionary of feature collections.  |
-    | **400$${\color{red}✗}$$**        | The items request is not supported. Please refer to documentation for examples.   |
-    | **401$${\color{red}✗}$$**        | Missing or unsupported API key. Please ensure you include a key for a project that has OS NGD API - Features added.   |
-    | **404$${\color{red}✗}$$**        | A/the collection is not a supported. Please refer to the documentation for a list of supported collections.   |
-    | **405$${\color{red}✗}$$**        | The HTTP method requested is not supported. This endpoint only supports "GET" requests.   |
-    | **406$${\color{red}✗}$$**        | A request header value was not supported. |
-    | **414$${\color{red}✗}$$**        | The request URI is too long. Please simplify the geometry filter and/or use simpler attribute filters. |
-    | **500$${\color{red}✗}$$**        | Unexpected/unknown error.    |
-    | **504$${\color{red}✗}$$**        | The request has timed out. Please check the service availability dashboard: [OS Data Hub Service Status](https://osdatahub.os.uk/serviceStatus).  |
+    | **<span style="color:red">200</span>**       | A list of features in a feature collection, or a hierarchical dictionary of feature collections.  |
+    | **400 $${\color{red}✗}$$**        | The items request is not supported. Please refer to documentation for examples.   |
+    | **401 $${\color{red}✗}$$**        | Missing or unsupported API key. Please ensure you include a key for a project that has OS NGD API - Features added.   |
+    | **404 $${\color{red}✗}$$**        | A/the collection is not a supported. Please refer to the documentation for a list of supported collections.   |
+    | **405 $${\color{red}✗}$$**        | The HTTP method requested is not supported. This endpoint only supports "GET" requests.   |
+    | **406 $${\color{red}✗}$$**        | A request header value was not supported. |
+    | **414 $${\color{red}✗}$$**        | The request URI is too long. Please simplify the geometry filter and/or use simpler attribute filters. |
+    | **500 $${\color{red}✗}$$**        | Unexpected/unknown error.    |
+    | **504 $${\color{red}✗}$$**        | The request has timed out. Please check the service availability dashboard: [OS Data Hub Service Status](https://osdatahub.os.uk/serviceStatus).  |
 
 ## Summary of Extensions
 
