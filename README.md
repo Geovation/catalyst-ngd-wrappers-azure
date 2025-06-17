@@ -44,10 +44,10 @@
     - **filter-lang**: str
     - **limit**: int
         - This can exceed the usual cap of 100 when the _limit_ extension is applied.
-        - **${\color{red}IMPORTANT}$**: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
+        - IMPORTANT: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
         The total number of features returned could therefore be much higher.
         - When used in conjunction with _request-limit_, the lower cap is applied.
-        - **${\color{red}Note}$**: When used with _geom_ extension, the number of features returned per _geom_ could be lower than _limit_ in some cases.
+        - NOTE: When used with _geom_ extension, the number of features returned per _geom_ could be lower than _limit_ in some cases.
         This is because, if features overlap multiple search areas, duplicates are removed after the limit is reached.
     - **offset**: int - Not available when used with the _limit_ extension 
 - **Additional Catalyst Query Parameters**
@@ -59,7 +59,7 @@
     Make sure that _filter-crs_ is set to the appropriate value.
     - **use-latest-collection** (bool, default False) - If True, it ensures that if a specific version of a collection is not supplied (eg. "bld-fts-building<s>-2</s>"), the latest version is used. If _use-latest-collection=True_ but the given collection does include a version, the specified version is always used regardless.
     - **request-limit**: int (default 50) - the number of OS NGD Feature requests at which to cap the Catalyst request. Consider [pricing](https://osdatahub.os.uk/plans).
-        - ${\color{red}IMPORTANT}$: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
+        - IMPORTANT: When used with _geom_ and/or _col_ exention, this limit applies <ins>per search area, per collection</ins>.
         The total number of features returned could therefore be much higher.
         - When used in conjunction with _limit_, the lower cap is applied.
     - **hierarchical-output**: bool, default False - If True, then results are returned in a hierarchical structure of GeoJSONs according to collection and/or search area, when the _col_ and _geom_ extensions are applied respectively.
