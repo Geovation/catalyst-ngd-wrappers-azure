@@ -220,7 +220,6 @@ def construct_response(
             mimetype="application/json"
         )
     except Exception as e:
-        raise e
         code = 500
         error_string = str(e)
         error_response = json.dumps({
