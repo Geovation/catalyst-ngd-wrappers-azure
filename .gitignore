@@ -1,5 +1,5 @@
 .venv
 .env
 **/.DS_Store
-Azure/__pycache__
-Azure/local.settings.json
+__pycache__
+local.settings.json
