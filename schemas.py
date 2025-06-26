@@ -15,7 +15,6 @@ class BaseSchema(Schema):
     '''Base schema for all queries'''
     wkt = String(required=False)
     use_latest_collection = Boolean(data_key='use-latest-collection', required=False)
-    access_token = String(data_key='access-token', required=False)
 
     class Meta:
         '''Allows additional fields to pass through to query_params'''
