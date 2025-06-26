@@ -1,3 +1,14 @@
+'''
+Schemas for the API endpoints.
+#         ColSchema,
+#         LimitGeomSchema,
+#         LimitColSchema,
+#         GeomColSchema,
+#         LimitGeomColSchema
+#     )
+#'''
+
+
 from marshmallow import Schema, INCLUDE, EXCLUDE
 from marshmallow.fields import Integer, String, Boolean, List
 
