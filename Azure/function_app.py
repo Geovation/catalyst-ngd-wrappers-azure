@@ -4,6 +4,7 @@ import azure.functions as func
 
 from azure.functions import HttpRequest, HttpResponse
 from azure.monitor.events.extension import track_event
+from azure.monitor.opentelemetry import configure_azure_monitor
 
 from marshmallow.exceptions import ValidationError
 from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema, \
@@ -16,6 +17,8 @@ from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_version
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
+configure_azure_monitor()
 
 @app.function_name('http_latest_collections')
 @app.route("catalyst/features/latest-collections")
@@ -206,10 +209,10 @@ def construct_response(
             attributes = ', '.join(fields)
             data['description'] = descr.format(attr=attributes)
 
-        if LOG_REQUEST_DETAILS:
-            custom_dimensions = data.pop('telemetryData', None)
-            if custom_dimensions:
-                track_event('OS NGD API - Features', custom_dimensions=custom_dimensions)
+        custom_dimensions = data.pop('telemetryData', None)
+        if custom_dimensions:
+            print(custom_dimensions)
+            track_event('OS NGD API - Features', custom_dimensions=custom_dimensions)
 
         json_data = json.dumps(data)
         return HttpResponse(
