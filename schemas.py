@@ -10,7 +10,6 @@ class LatestCollectionsSchema(Schema):
         '''Exclude unknown/extra fields'''
         unknown = EXCLUDE
 
-
 class BaseSchema(Schema):
     '''Base schema for all queries'''
     wkt = String(required=False)
@@ -20,39 +19,30 @@ class BaseSchema(Schema):
         '''Allows additional fields to pass through to query_params'''
         unknown = INCLUDE  # Allows additional fields to pass through to query_params
 
-
 class AbstractHierarchicalSchema(BaseSchema):
     '''Abstract schema for hierarchical queries'''
     hierarchical_output = Boolean(data_key='hierarchical-output', required=False)
-
 
 class LimitSchema(BaseSchema):
     '''limit is the maximum number of items to return'''
     limit = Integer(required=False)
     request_limit = Integer(data_key='request-limit', required=False)
 
-
 class GeomSchema(AbstractHierarchicalSchema):
     '''wkt is a well-known text representation of a geometry'''
-    wkt = String(required=True)
-
 
 class ColSchema(AbstractHierarchicalSchema):
     '''col is a list of collections to query'''
     collection = List(String(), required=True)
 
-
 class LimitGeomSchema(LimitSchema, GeomSchema):
     '''Combining Limit and Geom schemas'''
-
 
 class LimitColSchema(LimitSchema, ColSchema):
     '''Combining Limit and Col schemas'''
 
-
 class GeomColSchema(GeomSchema, ColSchema):
     '''Combining Geom and Col schemas'''
-
 
 class LimitGeomColSchema(LimitSchema, GeomSchema, ColSchema):
     '''Combining Limit, Geom and Col schemas'''
