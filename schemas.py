@@ -44,7 +44,6 @@ class ColSchema(AbstractHierarchicalSchema):
 
 class LimitGeomSchema(LimitSchema, GeomSchema):
     '''Combining Limit and Geom schemas'''
-    wkt = String(required=True)
 
 
 class LimitColSchema(LimitSchema, ColSchema):
@@ -53,9 +52,7 @@ class LimitColSchema(LimitSchema, ColSchema):
 
 class GeomColSchema(GeomSchema, ColSchema):
     '''Combining Geom and Col schemas'''
-    wkt = String(required=True)
 
 
 class LimitGeomColSchema(LimitSchema, GeomSchema, ColSchema):
     '''Combining Limit, Geom and Col schemas'''
-    wkt = String(required=True)
