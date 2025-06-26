@@ -1,12 +1,11 @@
 '''
 Schemas for the API endpoints.
-#         ColSchema,
-#         LimitGeomSchema,
-#         LimitColSchema,
-#         GeomColSchema,
-#         LimitGeomColSchema
-#     )
-#'''
+    - ColSchema,
+    - LimitGeomSchema,
+    - LimitColSchema,
+    - GeomColSchema,
+    - LimitGeomColSchema
+'''
 
 
 from marshmallow import Schema, INCLUDE, EXCLUDE
