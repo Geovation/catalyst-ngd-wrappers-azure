@@ -20,6 +20,20 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 configure_azure_monitor()
 
+def handle_400_error(error: ValidationError) -> HttpResponse:
+    """Handles 400 errors by returning a JSON response."""
+    code = 400
+    error_body = json.dumps({
+        "code": code,
+        "description": str(error),
+        "errorSource": "Catalyst Wrapper"
+    })
+    return HttpResponse(
+        body = error_body,
+        mimetype = "application/json",
+        status_code = code
+    )
+
 @app.function_name('http_latest_collections')
 @app.route("catalyst/features/latest-collections")
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
@@ -44,17 +58,7 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
     try:
         parsed_params = schema.load(params)
     except ValidationError as e:
-        code = 400
-        error_body = json.dumps({
-            "code": code,
-            "description": str(e),
-            "errorSource": "Catalyst Wrapper"
-        })
-        return HttpResponse(
-            error_body,
-            mimetype="application/json",
-            status_code=400
-        )
+        return handle_400_error(e)
 
     data = get_latest_collection_versions(**parsed_params)
     json_data = json.dumps(data)
@@ -99,17 +103,7 @@ def http_latest_single_col(req: HttpRequest) -> HttpResponse:
     try:
         parsed_params = schema.load(params)
     except ValidationError as e:
-        code = 400
-        error_body = json.dumps({
-            "code": code,
-            "description": str(e),
-            "errorSource": "Catalyst Wrapper"
-        })
-        return HttpResponse(
-            body=error_body,
-            mimetype="application/json",
-            status_code=code
-        )
+        return handle_400_error(e)
 
     data = get_specific_latest_collections([collection], **parsed_params)
     json_data = json.dumps(data)
@@ -176,17 +170,7 @@ def construct_response(
         try:
             parsed_params = schema.load(params)
         except ValidationError as e:
-            code = 400
-            error_body = json.dumps({
-                "code": code,
-                "description": str(e),
-                "errorSource": "Catalyst Wrapper"
-            })
-            return HttpResponse(
-                body=error_body,
-                mimetype="application/json",
-                status_code=code
-            )
+            return handle_400_error(e)
 
         custom_params = {
             k: parsed_params.pop(k)
