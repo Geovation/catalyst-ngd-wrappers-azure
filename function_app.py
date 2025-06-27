@@ -2,7 +2,6 @@ import json
 
 import azure.functions as func
 
-from http import HTTPStatus
 from azure.functions import HttpRequest, HttpResponse
 from azure.monitor.events.extension import track_event
 from azure.monitor.opentelemetry import configure_azure_monitor
@@ -212,14 +211,14 @@ def construct_response(
 
         custom_dimensions = data.pop('telemetryData', None)
         if custom_dimensions:
-            print(custom_dimensions)
             track_event('OS NGD API - Features', custom_dimensions=custom_dimensions)
 
+        code = data.get('code', 200)
         json_data = json.dumps(data)
         return HttpResponse(
             body=json_data,
             mimetype="application/json",
-            status_code=json_data['code']
+            status_code=code
         )
     except Exception as e:
         code = 500
