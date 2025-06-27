@@ -20,21 +20,35 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 configure_azure_monitor()
 
+def handle_error(
+    error: Exception = None,
+    description: str = None,
+    code: int = 400
+) -> HttpResponse:
+    """Formats and configures errors, returning a JSON response."""
+    assert error or description, "Either error or description must be provided."
+    if not description:
+        description = str(error)
+    error_body = json.dumps({
+        "code": code,
+        "description": description,
+        "errorSource": "Catalyst Wrapper"
+    })
+    return HttpResponse(
+        body = error_body,
+        mimetype = "application/json",
+        status_code = code
+    )
+
+
 @app.function_name('http_latest_collections')
 @app.route("catalyst/features/latest-collections")
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
 
     if req.method != 'GET':
-        code = 405
-        error_body = json.dumps({
-            "code": code,
-            "description": "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-            "errorSource": "Catalyst Wrapper"
-        })
-        return HttpResponse(
-            body=error_body,
-            mimetype="application/json",
-            status_code=code
+        return handle_error(
+            description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
+            code = 405
         )
 
     schema = LatestCollectionsSchema()
@@ -44,17 +58,7 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
     try:
         parsed_params = schema.load(params)
     except ValidationError as e:
-        code = 400
-        error_body = json.dumps({
-            "code": code,
-            "description": str(e),
-            "errorSource": "Catalyst Wrapper"
-        })
-        return HttpResponse(
-            error_body,
-            mimetype="application/json",
-            status_code=400
-        )
+        return handle_error(e)
 
     data = get_latest_collection_versions(**parsed_params)
     json_data = json.dumps(data)
@@ -80,16 +84,9 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
 def http_latest_single_col(req: HttpRequest) -> HttpResponse:
 
     if req.method != 'GET':
-        code = 405
-        error_body = json.dumps({
-            "code": code,
-            "description": "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-            "errorSource": "Catalyst Wrapper"
-        })
-        return HttpResponse(
-            body=error_body,
-            mimetype="application/json",
-            status_code=code
+        return handle_error(
+            description="The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
+            code=405
         )
 
     schema = LatestCollectionsSchema()
@@ -99,17 +96,7 @@ def http_latest_single_col(req: HttpRequest) -> HttpResponse:
     try:
         parsed_params = schema.load(params)
     except ValidationError as e:
-        code = 400
-        error_body = json.dumps({
-            "code": code,
-            "description": str(e),
-            "errorSource": "Catalyst Wrapper"
-        })
-        return HttpResponse(
-            body=error_body,
-            mimetype="application/json",
-            status_code=code
-        )
+        return handle_error(e)
 
     data = get_specific_latest_collections([collection], **parsed_params)
     json_data = json.dumps(data)
@@ -151,16 +138,9 @@ def construct_response(
     try:
         # Handle incorrect HTTP methods
         if req.method != 'GET':
-            code = 405
-            error_body = json.dumps({
-                "code": code,
-                "description": "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-                "errorSource": "Catalyst Wrapper"
-            })
-            return HttpResponse(
-                body=error_body,
-                mimetype="application/json",
-                status_code=code
+            return handle_error(
+                description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
+                code = 405
             )
 
         # Load the schema and parse the request parameters
@@ -176,17 +156,7 @@ def construct_response(
         try:
             parsed_params = schema.load(params)
         except ValidationError as e:
-            code = 400
-            error_body = json.dumps({
-                "code": code,
-                "description": str(e),
-                "errorSource": "Catalyst Wrapper"
-            })
-            return HttpResponse(
-                body=error_body,
-                mimetype="application/json",
-                status_code=code
-            )
+            return handle_error(e)
 
         custom_params = {
             k: parsed_params.pop(k)
@@ -221,18 +191,7 @@ def construct_response(
             status_code=code
         )
     except Exception as e:
-        code = 500
-        error_string = str(e)
-        error_response = json.dumps({
-            "code": code,
-            "description": error_string,
-            "errorSource": "Catalyst Wrapper"
-        })
-        return HttpResponse(
-            body=error_response,
-            mimetype="application/json",
-            status_code=code
-        )
+        handle_error(error = e, code = 500)
 
 
 @app.function_name('http_base')
