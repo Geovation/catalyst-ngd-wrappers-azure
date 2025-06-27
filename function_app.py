@@ -2,6 +2,7 @@ import json
 
 import azure.functions as func
 
+from http import HTTPStatus
 from azure.functions import HttpRequest, HttpResponse
 from azure.monitor.events.extension import track_event
 from azure.monitor.opentelemetry import configure_azure_monitor
@@ -217,7 +218,8 @@ def construct_response(
         json_data = json.dumps(data)
         return HttpResponse(
             body=json_data,
-            mimetype="application/json"
+            mimetype="application/json",
+            status_code=json_data['code']
         )
     except Exception as e:
         code = 500
