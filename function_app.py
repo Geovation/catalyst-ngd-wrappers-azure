@@ -26,6 +26,7 @@ def handle_error(
     code: int = 400
 ) -> HttpResponse:
     """Formats and configures errors, returning a JSON response."""
+    assert error or description, "Either error or description must be provided."
     if not description:
         description = str(error)
     error_body = json.dumps({
