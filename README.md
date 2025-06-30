@@ -4,12 +4,14 @@
 
 - _Subtitles specifying the naming convention and ordering for python function names, and the corresponding final component of API paths_
 - _Eg. the api url which combines the feature limit exentension, and the multiple collections extension will finish .../items/limit-col?..._
+- _The OAuth2 Manager is applied by default, if the appropriate environment variables are configured (see below)
 
 ```mermaid
 graph TD
-    A[OAuth2_manager<br><em>auth</em>] --> B[feature_limit_extension<br><em>limit</em>]
-    A --> C[multigeometry_search_extension<br><em>geom</em>]
-    A --> D[multiple_collections_extension<br><em>col</em>]
+    X[Basic Request Wrapper] --> A[OAuth2_manager]
+    A[OAuth2 Manager<br><em>auth</em>] --> B[feature_limit_extension<br><em>limit</em>]
+    A --> C[Multigeometry Search Extension<br><em>geom</em>]
+    A --> D[Multiple Collections Extension<br><em>col</em>]
     B --> C
     B --> D
     C --> D
