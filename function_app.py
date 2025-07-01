@@ -93,7 +93,7 @@ def retrieve_collections(req: HttpRequest) -> HttpResponse:
 
 
 @app.function_name('http_latest_single_col')
-@app.route("catalyst/features/latest-collections/{collection:optional}")
+@app.route("catalyst/features/latest-collections/{collection?}")
 def http_latest_single_col(req: HttpRequest) -> HttpResponse:
     return retrieve_collections(req)
 
