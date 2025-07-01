@@ -20,20 +20,33 @@ class LatestCollectionsSchema(Schema):
         '''Exclude unknown/extra fields'''
         unknown = EXCLUDE
 
-class BaseSchema(Schema):
+class NGDFeaturesSchema(Schema):
+    '''Schema mirroring NGD API - Features endpoint'''
+    bbox = String(required=False)
+    bbox_crs = String(data_key='bbox-crs', required=False)
+    crs = String(required=False)
+    datetime = String(required=False)
+    key = String(required=False)
+    limit = Integer(required=False)
+    offset = Integer(required=False)
+    filter = String(required=False)
+    filter_crs = String(data_key='filter-crs', required=False)
+    filter_lang = String(data_key='filter-lang', required=False)
+    
+    class Meta:
+        '''Exclude unknown/extra fields'''
+        unknown = EXCLUDE
+
+class CatalystBaseSchema(NGDFeaturesSchema):
     '''Base schema for all queries'''
     wkt = String(required=False)
     use_latest_collection = Boolean(data_key='use-latest-collection', required=False)
 
-    class Meta:
-        '''Allows additional fields to pass through to query_params'''
-        unknown = INCLUDE  # Allows additional fields to pass through to query_params
-
-class AbstractHierarchicalSchema(BaseSchema):
+class AbstractHierarchicalSchema(CatalystBaseSchema):
     '''Abstract schema for hierarchical queries'''
     hierarchical_output = Boolean(data_key='hierarchical-output', required=False)
 
-class LimitSchema(BaseSchema):
+class LimitSchema(CatalystBaseSchema):
     '''limit is the maximum number of items to return'''
     limit = Integer(required=False)
     request_limit = Integer(data_key='request-limit', required=False)
