@@ -15,123 +15,63 @@ from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_version
 
 from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema, \
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
+from utils import remove_query_params, handle_error
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 configure_azure_monitor()
 
-def handle_error(
-    error: Exception = None,
-    description: str = None,
-    code: int = 400
-) -> HttpResponse:
-    """Formats and configures errors, returning a JSON response."""
-    assert error or description, "Either error or description must be provided."
-    if not description:
-        description = str(error)
-    error_body = json.dumps({
-        "code": code,
-        "description": description,
-        "errorSource": "Catalyst Wrapper"
-    })
-    return HttpResponse(
-        body = error_body,
-        mimetype = "application/json",
-        status_code = code
-    )
-
-
-def remove_query_params(url: str) -> str:
-    '''Removes query parameters from a URL.'''
-    if '?' in url:
-        return url.split('?')[0]
-    return url
-
-
-@app.function_name('http_latest_collections')
-@app.route("catalyst/features/latest-collections")
-def http_latest_collections(req: HttpRequest) -> HttpResponse:
-
-    if req.method != 'GET':
-        return handle_error(
-            description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-            code = 405
-        )
-
-    schema = LatestCollectionsSchema()
-
-    params = {**req.params}
-
-    try:
-        parsed_params = schema.load(params)
-    except ValidationError as e:
-        return handle_error(e)
-
-    data = get_latest_collection_versions(**parsed_params)
-    json_data = json.dumps(data)
-
-    custom_dimensions = {f'query_params.{str(k)}': str(v) for k, v in parsed_params.items()}
-    custom_dimensions.pop('key', None)
-    custom_dimensions.pop('access_token', None)
-    url = remove_query_params(req.url)
-    custom_dimensions.update({
-        'method': 'GET',
-        'url.path': url,
-    })
-
-    track_event('HTTP_Request', custom_dimensions=custom_dimensions)
-
-    return HttpResponse(
-        body=json_data,
-        mimetype="application/json"
-    )
-
 
 @app.function_name('http_latest_single_col')
-@app.route("catalyst/features/latest-collections/{collection}")
-def http_latest_single_col(req: HttpRequest) -> HttpResponse:
-
-    if req.method != 'GET':
-        return handle_error(
-            description="The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-            code=405
-        )
-
-    schema = LatestCollectionsSchema()
-    collection = req.route_params.get('collection')
-
-    params = {**req.params}
+@app.route("catalyst/features/latest-collections/{collection?}")
+def http_latest_collections(req: HttpRequest) -> HttpResponse:
+    '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
+    Handles parameter validation and telemetry tracking.'''
+    
     try:
-        parsed_params = schema.load(params)
-    except ValidationError as e:
-        return handle_error(e)
+        if req.method != 'GET':
+            return handle_error(
+                description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
+                code = 405
+            )
 
-    data = get_specific_latest_collections([collection], **parsed_params)
-    json_data = json.dumps(data)
+        schema = LatestCollectionsSchema()
+        params = {**req.params}
 
-    custom_dimensions = {f'query_params.{str(k)}': str(
-        v) for k, v in parsed_params.items()}
-    custom_dimensions.pop('key', None)
-    url = remove_query_params(req.url)
-    custom_dimensions.update({
-        'method': 'GET',
-        'url.path': url,
-        'url.path_params.collection': collection,
-    })
+        collection = req.route_params.get('collection')
 
-    track_event('HTTP_Request', custom_dimensions=custom_dimensions)
+        try:
+            parsed_params = schema.load(params)
+        except ValidationError as e:
+            return handle_error(e)
+        
+        custom_dimensions = {
+            f'query_params.{str(k)}': str(v)
+            for k, v in parsed_params.items()
+        }
+        custom_dimensions.pop('key', None)
+        url = remove_query_params(req.url)
+        custom_dimensions.update({
+            'method': 'GET',
+            'url.path': url,
+        })
 
-    return HttpResponse(
-        body=json_data,
-        mimetype="application/json"
-    )
+        if collection:
+            data = get_specific_latest_collections([collection], **parsed_params)
+            custom_dimensions['url.path_params.collection'] = collection
+        else:
+            data = get_latest_collection_versions(**parsed_params)
 
+        json_data = json.dumps(data)
 
-def delistify(params: dict) -> None:
-    '''Converts list parameters in the params dictionary to single values.'''
-    for k, v in params.items():
-        if k != 'collection':
-            params[k] = v[0]
+        track_event('HTTP_Request', custom_dimensions=custom_dimensions)
+
+        return HttpResponse(
+            body=json_data,
+            mimetype="application/json"
+        )
+    except Exception as e:
+        handle_error(error = e, code = 500)
 
 
 def construct_response(
@@ -184,7 +124,11 @@ def construct_response(
 
         descr = data.get('description')
         if data.get('errorSource') and isinstance(descr, str):
-            fields = [x.replace('_', '-') for x in schema.fields if x != 'limit']
+            fields = [
+                x.replace('_', '-')
+                for x in schema.fields
+                if x != 'limit'
+            ]
             attributes = ', '.join(fields)
             data['description'] = descr.format(attr=attributes)
 
