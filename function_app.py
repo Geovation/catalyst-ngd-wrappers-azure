@@ -15,37 +15,11 @@ from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_version
 
 from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema, \
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
+from utils import remove_query_params, handle_error, delistify
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 configure_azure_monitor()
-
-def handle_error(
-    error: Exception = None,
-    description: str = None,
-    code: int = 400
-) -> HttpResponse:
-    """Formats and configures errors, returning a JSON response."""
-    assert error or description, "Either error or description must be provided."
-    if not description:
-        description = str(error)
-    error_body = json.dumps({
-        "code": code,
-        "description": description,
-        "errorSource": "Catalyst Wrapper"
-    })
-    return HttpResponse(
-        body = error_body,
-        mimetype = "application/json",
-        status_code = code
-    )
-
-
-def remove_query_params(url: str) -> str:
-    '''Removes query parameters from a URL.'''
-    if '?' in url:
-        return url.split('?')[0]
-    return url
 
 
 @app.function_name('http_latest_single_col')
@@ -98,12 +72,6 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
         )
     except Exception as e:
         handle_error(error = e, code = 500)
-
-def delistify(params: dict) -> None:
-    '''Converts list parameters in the params dictionary to single values.'''
-    for k, v in params.items():
-        if k != 'collection':
-            params[k] = v[0]
 
 
 def construct_response(
