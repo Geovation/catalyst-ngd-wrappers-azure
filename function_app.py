@@ -54,45 +54,50 @@ def retrieve_collections(req: HttpRequest) -> HttpResponse:
     '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
     
-    if req.method != 'GET':
-        return handle_error(
-            description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-            code = 405
-        )
-
-    schema = LatestCollectionsSchema()
-    params = {**req.params}
-
-    collection = req.route_params.get('collection')
-
     try:
-        parsed_params = schema.load(params)
-    except ValidationError as e:
-        return handle_error(e)
-    
-    custom_dimensions = {f'query_params.{str(k)}': str(v) for k, v in parsed_params.items()}
-    custom_dimensions.pop('key', None)
-    url = remove_query_params(req.url)
-    custom_dimensions.update({
-        'method': 'GET',
-        'url.path': url,
-    })
+        if req.method != 'GET':
+            return handle_error(
+                description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
+                code = 405
+            )
 
-    if collection:
-        data = get_specific_latest_collections([collection], **parsed_params)
-        custom_dimensions['url.path_params.collection'] = collection
-    else:
-        data = get_latest_collection_versions(**parsed_params)
+        schema = LatestCollectionsSchema()
+        params = {**req.params}
 
-    json_data = json.dumps(data)
+        collection = req.route_params.get('collection')
 
-    track_event('HTTP_Request', custom_dimensions=custom_dimensions)
+        try:
+            parsed_params = schema.load(params)
+        except ValidationError as e:
+            return handle_error(e)
+        
+        custom_dimensions = {
+            f'query_params.{str(k)}': str(v)
+            for k, v in parsed_params.items()
+        }
+        custom_dimensions.pop('key', None)
+        url = remove_query_params(req.url)
+        custom_dimensions.update({
+            'method': 'GET',
+            'url.path': url,
+        })
 
-    return HttpResponse(
-        body=json_data,
-        mimetype="application/json"
-    )
+        if collection:
+            data = get_specific_latest_collections([collection], **parsed_params)
+            custom_dimensions['url.path_params.collection'] = collection
+        else:
+            data = get_latest_collection_versions(**parsed_params)
 
+        json_data = json.dumps(data)
+
+        track_event('HTTP_Request', custom_dimensions=custom_dimensions)
+
+        return HttpResponse(
+            body=json_data,
+            mimetype="application/json"
+        )
+    except Exception as e:
+        handle_error(error = e, code = 500)
 
 def delistify(params: dict) -> None:
     '''Converts list parameters in the params dictionary to single values.'''
