@@ -8,7 +8,7 @@ Schemas for the API endpoints.
 '''
 
 
-from marshmallow import Schema, INCLUDE, EXCLUDE
+from marshmallow import Schema, EXCLUDE
 from marshmallow.fields import Integer, String, Boolean, List
 
 class LatestCollectionsSchema(Schema):

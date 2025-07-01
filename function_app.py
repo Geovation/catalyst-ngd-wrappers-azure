@@ -13,7 +13,7 @@ from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_version
     items_col, items_limit_geom, items_limit_col, items_geom_col, \
     items_limit_geom_col
 
-from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema, \
+from schemas import LatestCollectionsSchema, CatalystBaseSchema, LimitSchema, GeomSchema, \
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 from utils import remove_query_params, handle_error
 
@@ -152,7 +152,7 @@ def construct_response(
 def http_base(req: HttpRequest) -> HttpResponse:
     response = construct_response(
         req,
-        BaseSchema,
+        CatalystBaseSchema,
         items
     )
     return response
