@@ -41,6 +41,13 @@ def handle_error(
     )
 
 
+def remove_query_params(url: str) -> str:
+    '''Removes query parameters from a URL.'''
+    if '?' in url:
+        return url.split('?')[0]
+    return url
+
+
 @app.function_name('http_latest_collections')
 @app.route("catalyst/features/latest-collections")
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
@@ -66,9 +73,10 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
     custom_dimensions = {f'query_params.{str(k)}': str(v) for k, v in parsed_params.items()}
     custom_dimensions.pop('key', None)
     custom_dimensions.pop('access_token', None)
+    url = remove_query_params(req.url)
     custom_dimensions.update({
         'method': 'GET',
-        'url.path': req.url,
+        'url.path': url,
     })
 
     track_event('HTTP_Request', custom_dimensions=custom_dimensions)
@@ -104,9 +112,10 @@ def http_latest_single_col(req: HttpRequest) -> HttpResponse:
     custom_dimensions = {f'query_params.{str(k)}': str(
         v) for k, v in parsed_params.items()}
     custom_dimensions.pop('key', None)
+    url = remove_query_params(req.url)
     custom_dimensions.update({
         'method': 'GET',
-        'url.path': req.url,
+        'url.path': url,
         'url.path_params.collection': collection,
     })
 

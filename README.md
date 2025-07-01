@@ -9,7 +9,7 @@
 ```mermaid
 graph TD
     X[Basic Request Wrapper] --> A[OAuth2_manager]
-    A[OAuth2 Manager<br><em>auth</em>] --> B[feature_limit_extension<br><em>limit</em>]
+    A[OAuth2 Manager] --> B[feature_limit_extension<br><em>limit</em>]
     A --> C[Multigeometry Search Extension<br><em>geom</em>]
     A --> D[Multiple Collections Extension<br><em>col</em>]
     B --> C
