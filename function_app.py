@@ -50,7 +50,7 @@ def remove_query_params(url: str) -> str:
 
 @app.function_name('http_latest_single_col')
 @app.route("catalyst/features/latest-collections/{collection?}")
-def retrieve_collections(req: HttpRequest) -> HttpResponse:
+def http_latest_collections(req: HttpRequest) -> HttpResponse:
     '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
     
@@ -156,7 +156,11 @@ def construct_response(
 
         descr = data.get('description')
         if data.get('errorSource') and isinstance(descr, str):
-            fields = [x.replace('_', '-') for x in schema.fields if x != 'limit']
+            fields = [
+                x.replace('_', '-')
+                for x in schema.fields
+                if x != 'limit'
+            ]
             attributes = ', '.join(fields)
             data['description'] = descr.format(attr=attributes)
 
