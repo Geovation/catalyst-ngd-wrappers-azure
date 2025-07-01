@@ -49,6 +49,8 @@ def remove_query_params(url: str) -> str:
 
 
 def retrieve_collections(req: HttpRequest) -> HttpResponse:
+    '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
+    Handles parameter validation and telemetry tracking.'''
     
     if req.method != 'GET':
         return handle_error(
