@@ -48,6 +48,8 @@ def remove_query_params(url: str) -> str:
     return url
 
 
+@app.function_name('http_latest_single_col')
+@app.route("catalyst/features/latest-collections/{collection?}")
 def retrieve_collections(req: HttpRequest) -> HttpResponse:
     '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
@@ -90,12 +92,6 @@ def retrieve_collections(req: HttpRequest) -> HttpResponse:
         body=json_data,
         mimetype="application/json"
     )
-
-
-@app.function_name('http_latest_single_col')
-@app.route("catalyst/features/latest-collections/{collection?}")
-def http_latest_single_col(req: HttpRequest) -> HttpResponse:
-    return retrieve_collections(req)
 
 
 def delistify(params: dict) -> None:
