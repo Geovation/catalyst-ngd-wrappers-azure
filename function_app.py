@@ -93,79 +93,13 @@ def retrieve_collections(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_latest_collections')
 @app.route("catalyst/features/latest-collections")
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
-
-    if req.method != 'GET':
-        return handle_error(
-            description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-            code = 405
-        )
-
-    schema = LatestCollectionsSchema()
-
-    params = {**req.params}
-
-    try:
-        parsed_params = schema.load(params)
-    except ValidationError as e:
-        return handle_error(e)
-
-    data = get_latest_collection_versions(**parsed_params)
-    json_data = json.dumps(data)
-
-    custom_dimensions = {f'query_params.{str(k)}': str(v) for k, v in parsed_params.items()}
-    custom_dimensions.pop('key', None)
-    url = remove_query_params(req.url)
-    custom_dimensions.update({
-        'method': 'GET',
-        'url.path': url,
-    })
-
-    track_event('HTTP_Request', custom_dimensions=custom_dimensions)
-
-    return HttpResponse(
-        body=json_data,
-        mimetype="application/json"
-    )
+    return retrieve_collections(req)
 
 
 @app.function_name('http_latest_single_col')
 @app.route("catalyst/features/latest-collections/{collection}")
 def http_latest_single_col(req: HttpRequest) -> HttpResponse:
-
-    if req.method != 'GET':
-        return handle_error(
-            description="The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
-            code=405
-        )
-
-    schema = LatestCollectionsSchema()
-    collection = req.route_params.get('collection')
-
-    params = {**req.params}
-    try:
-        parsed_params = schema.load(params)
-    except ValidationError as e:
-        return handle_error(e)
-
-    data = get_specific_latest_collections([collection], **parsed_params)
-    json_data = json.dumps(data)
-
-    custom_dimensions = {f'query_params.{str(k)}': str(
-        v) for k, v in parsed_params.items()}
-    custom_dimensions.pop('key', None)
-    url = remove_query_params(req.url)
-    custom_dimensions.update({
-        'method': 'GET',
-        'url.path': url,
-        'url.path_params.collection': collection,
-    })
-
-    track_event('HTTP_Request', custom_dimensions=custom_dimensions)
-
-    return HttpResponse(
-        body=json_data,
-        mimetype="application/json"
-    )
+    return retrieve_collections(req)
 
 
 def delistify(params: dict) -> None:
