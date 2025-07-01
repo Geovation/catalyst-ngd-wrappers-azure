@@ -15,7 +15,7 @@ from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_version
 
 from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema, \
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
-from utils import remove_query_params, handle_error, delistify
+from utils import remove_query_params, handle_error
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 

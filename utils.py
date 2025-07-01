@@ -9,13 +9,6 @@ def remove_query_params(url: str) -> str:
     return url
 
 
-def delistify(params: dict) -> None:
-    '''Converts list parameters in the params dictionary to single values.'''
-    for k, v in params.items():
-        if k != 'collection':
-            params[k] = v[0]
-
-
 def handle_error(
     error: Exception = None,
     description: str = None,
