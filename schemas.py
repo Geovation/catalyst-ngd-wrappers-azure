@@ -8,7 +8,7 @@ Schemas for the API endpoints.
 '''
 
 
-from marshmallow import Schema, EXCLUDE
+from marshmallow import Schema, INCLUDE
 from marshmallow.fields import Integer, String, Boolean, List
 
 class LatestCollectionsSchema(Schema):
@@ -17,30 +17,17 @@ class LatestCollectionsSchema(Schema):
     recent_update_days = Integer(data_key='recent-update-days', required=False)
 
     class Meta:
-        '''Exclude unknown/extra fields'''
-        unknown = EXCLUDE
+        '''Pass other fields forward to the API'''
+        unknown = INCLUDE
 
-class NGDFeaturesSchema(Schema):
-    '''Schema mirroring NGD API - Features endpoint'''
-    bbox = String(required=False)
-    bbox_crs = String(data_key='bbox-crs', required=False)
-    crs = String(required=False)
-    datetime = String(required=False)
-    key = String(required=False)
-    limit = Integer(required=False)
-    offset = Integer(required=False)
-    filter = String(required=False)
-    filter_crs = String(data_key='filter-crs', required=False)
-    filter_lang = String(data_key='filter-lang', required=False)
-    
-    class Meta:
-        '''Exclude unknown/extra fields'''
-        unknown = EXCLUDE
-
-class CatalystBaseSchema(NGDFeaturesSchema):
+class CatalystBaseSchema(Schema):
     '''Base schema for all queries'''
     wkt = String(required=False)
     use_latest_collection = Boolean(data_key='use-latest-collection', required=False)
+
+    class Meta:
+        '''Pass other fields forward to the API'''
+        unknown = INCLUDE
 
 class AbstractHierarchicalSchema(CatalystBaseSchema):
     '''Abstract schema for hierarchical queries'''
@@ -48,7 +35,6 @@ class AbstractHierarchicalSchema(CatalystBaseSchema):
 
 class LimitSchema(CatalystBaseSchema):
     '''limit is the maximum number of items to return'''
-    limit = Integer(required=False)
     request_limit = Integer(data_key='request-limit', required=False)
 
 class GeomSchema(AbstractHierarchicalSchema):

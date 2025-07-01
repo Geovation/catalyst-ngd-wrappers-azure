@@ -13,8 +13,8 @@ from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_version
     items_col, items_limit_geom, items_limit_col, items_geom_col, \
     items_limit_geom_col
 
-from schemas import LatestCollectionsSchema, CatalystBaseSchema, LimitSchema, GeomSchema, \
-    ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
+from schemas import LatestCollectionsSchema, NGDFeaturesSchema, CatalystBaseSchema, LimitSchema, \
+    GeomSchema, ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 from utils import remove_query_params, handle_error
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -44,7 +44,7 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
             parsed_params = schema.load(params)
         except ValidationError as e:
             return handle_error(e)
-        
+
         custom_dimensions = {
             f'query_params.{str(k)}': str(v)
             for k, v in parsed_params.items()
@@ -110,7 +110,7 @@ def construct_response(
         custom_params = {
             k: parsed_params.pop(k)
             for k in schema.fields.keys()
-            if k in parsed_params
+            if k  in parsed_params
         }
         if not multi_collection:
             custom_params['collection'] = req.route_params.get('collection')
