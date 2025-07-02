@@ -78,6 +78,23 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
         handle_error(error = e, code = 500)
 
 
+def get_request_data(req: HttpRequest) -> dict:
+    '''
+    Extracts the request data from the HttpRequest object.
+    Returns a dictionary containing the request parameters and headers.
+    '''
+    method = req.method
+    params = {**req.params}
+    route_params = req.route_params
+    headers = req.headers.__dict__.get('__http_headers__', {})
+    return {
+        'method': method,
+        'params': params,
+        'route_params': route_params,
+        'headers': headers
+    }
+
+
 def construct_response(
     req: HttpRequest,
     schema_class: type,
@@ -89,8 +106,9 @@ def construct_response(
     '''
 
     try:
+        data = get_request_data(req)
         # Handle incorrect HTTP methods
-        if req.method != 'GET':
+        if data['method'] != 'GET':
             return handle_error(
                 description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
                 code = 405
@@ -100,7 +118,7 @@ def construct_response(
         schema = schema_class()
         multi_collection = isinstance(schema, ColSchema)
 
-        params = {**req.params}
+        params = data['params']
         if multi_collection:
             col = params.get('collection')
             if col:
@@ -117,12 +135,11 @@ def construct_response(
             if k  in parsed_params
         }
         if not multi_collection:
-            custom_params['collection'] = req.route_params.get('collection')
+            custom_params['collection'] = data['route_params'].get('collection')
 
-        headers = req.headers.__dict__.get('__http_headers__')
         data = func_(
             query_params=parsed_params,
-            headers=headers,
+            headers=data['headers'],
             **custom_params
         )
 
