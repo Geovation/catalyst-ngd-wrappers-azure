@@ -9,11 +9,10 @@ from azure.monitor.opentelemetry import configure_azure_monitor
 from marshmallow.exceptions import ValidationError
 
 from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_versions, \
-    get_specific_latest_collections, items, items_limit, items_geom, \
-    items_col, items_limit_geom, items_limit_col, items_geom_col, \
-    items_limit_geom_col
+    get_specific_latest_collections, items, items_limit, items_geom, items_col, \
+    items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
 
-from schemas import LatestCollectionsSchema, BaseSchema, LimitSchema, GeomSchema, \
+from schemas import LatestCollectionsSchema, CatalystBaseSchema, LimitSchema, GeomSchema, \
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 from utils import remove_query_params, handle_error
 
@@ -27,7 +26,7 @@ configure_azure_monitor()
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
     '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
-    
+
     try:
         if req.method != 'GET':
             return handle_error(
@@ -37,14 +36,20 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
 
         schema = LatestCollectionsSchema()
         params = {**req.params}
+        fail_condition1 = len(params) > 1
+        fail_condition2 = len(params) == 1 and not params.get('recent-update-days')
+        if fail_condition1 or fail_condition2:
+            return handle_error(
+                code = 400,
+                description = "The only supported query parameter is 'recent-update-days'.",
+            )
 
         collection = req.route_params.get('collection')
-
         try:
             parsed_params = schema.load(params)
         except ValidationError as e:
             return handle_error(e)
-        
+
         custom_dimensions = {
             f'query_params.{str(k)}': str(v)
             for k, v in parsed_params.items()
@@ -55,7 +60,6 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
             'method': 'GET',
             'url.path': url,
         })
-
         if collection:
             data = get_specific_latest_collections([collection], **parsed_params)
             custom_dimensions['url.path_params.collection'] = collection
@@ -110,7 +114,7 @@ def construct_response(
         custom_params = {
             k: parsed_params.pop(k)
             for k in schema.fields.keys()
-            if k in parsed_params
+            if k  in parsed_params
         }
         if not multi_collection:
             custom_params['collection'] = req.route_params.get('collection')
@@ -152,7 +156,7 @@ def construct_response(
 def http_base(req: HttpRequest) -> HttpResponse:
     response = construct_response(
         req,
-        BaseSchema,
+        CatalystBaseSchema,
         items
     )
     return response
