@@ -9,12 +9,11 @@ from azure.monitor.opentelemetry import configure_azure_monitor
 from marshmallow.exceptions import ValidationError
 
 from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_versions, \
-    get_specific_latest_collections, items, items_limit, items_geom, \
-    items_col, items_limit_geom, items_limit_col, items_geom_col, \
-    items_limit_geom_col
+    get_specific_latest_collections, items, items_limit, items_geom, items_col, \
+    items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
 
-from schemas import LatestCollectionsSchema, NGDFeaturesSchema, CatalystBaseSchema, LimitSchema, \
-    GeomSchema, ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
+from schemas import LatestCollectionsSchema, CatalystBaseSchema, LimitSchema, GeomSchema, \
+    ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 from utils import remove_query_params, handle_error
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -27,7 +26,7 @@ configure_azure_monitor()
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
     '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
-    
+
     try:
         if req.method != 'GET':
             return handle_error(
@@ -37,9 +36,13 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
 
         schema = LatestCollectionsSchema()
         params = {**req.params}
+        if params and len(params) == 1 and params.keys() != 'recent-update-days':
+            return handle_error(
+                description = "The only supported query parameter is 'recent-update-days'.",
+                code = 400
+            )
 
         collection = req.route_params.get('collection')
-
         try:
             parsed_params = schema.load(params)
         except ValidationError as e:
@@ -55,7 +58,6 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
             'method': 'GET',
             'url.path': url,
         })
-
         if collection:
             data = get_specific_latest_collections([collection], **parsed_params)
             custom_dimensions['url.path_params.collection'] = collection

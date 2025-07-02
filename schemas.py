@@ -13,7 +13,6 @@ from marshmallow.fields import Integer, String, Boolean, List
 
 class LatestCollectionsSchema(Schema):
     '''Schema for the latest collections endpoint'''
-    flag_recent_updates = Boolean(data_key='flag-recent-updates', required=False)
     recent_update_days = Integer(data_key='recent-update-days', required=False)
 
     class Meta:
