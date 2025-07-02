@@ -17,6 +17,22 @@ from schemas import LatestCollectionsSchema, CatalystBaseSchema, LimitSchema, Ge
 from utils import remove_query_params, handle_error
 
 
+def get_request_data(event: dict) -> dict:
+    '''
+    Extracts the request data from the HttpRequest object.
+    Returns a dictionary containing the request parameters and headers.
+    '''
+    method = event.get('http').get('method')
+    params = event.get('queryStringParameters', {})
+    route_params = event.get('pathParameters')
+    headers = event.get('headers', {})
+    return {
+        'method': method,
+        'params': params,
+        'route_params': route_params,
+        'headers': headers
+    }
+
 def construct_response(
     event: dict,
     schema_class: type,
@@ -28,8 +44,9 @@ def construct_response(
     '''
 
     try:
+        data = get_request_data(event)
         # Handle incorrect HTTP methods
-        if event.get('http').get('method') != 'GET':
+        if data['method'] != 'GET':
             return handle_error(
                 description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
                 code = 405
@@ -39,7 +56,7 @@ def construct_response(
         schema = schema_class()
         multi_collection = isinstance(schema, ColSchema)
 
-        params = event.get('queryStringParameters', {})
+        params = data['params']
         if multi_collection:
             col = params.get('collection')
             if col:
@@ -56,7 +73,7 @@ def construct_response(
             if k  in parsed_params
         }
         if not multi_collection:
-            custom_params['collection'] = event.get('pathParameters').get('collection')
+            custom_params['collection'] = data['route_params'].get('collection')
 
         headers = event.get('headers', {})
         data = func_(
@@ -83,9 +100,7 @@ def construct_response(
         response = {
             "isBase64Encoded": False,
             "statusCode": code,
-            "headers": {
-                "Content-Type": "application/json"
-            },
+            "headers": data['headers'],
             "body": data
         }
         return response
