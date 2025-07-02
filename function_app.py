@@ -36,10 +36,12 @@ def http_latest_collections(req: HttpRequest) -> HttpResponse:
 
         schema = LatestCollectionsSchema()
         params = {**req.params}
-        if params > 1 or (len(params) == 1 and not params.get('recent-update-days')):
+        fail_condition1 = len(params) > 1
+        fail_condition2 = len(params) == 1 and not params.get('recent-update-days')
+        if fail_condition1 or fail_condition2:
             return handle_error(
                 code = 400,
-                description = "The only.  supported query parameter is 'recent-update-days'.",
+                description = "The only supported query parameter is 'recent-update-days'.",
             )
 
         collection = req.route_params.get('collection')
