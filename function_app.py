@@ -154,6 +154,7 @@ def construct_response(
 @app.function_name('http_base')
 @app.route("catalyst/features/{collection}/items")
 def http_base(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, No extensions applied.'''
     response = construct_response(
         req,
         CatalystBaseSchema,
@@ -165,6 +166,8 @@ def http_base(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_limit')
 @app.route("catalyst/features/{collection}/items/limit")
 def http_limit(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, Exensions applied:
+        - Limit'''
     response = construct_response(
         req,
         LimitSchema,
@@ -176,6 +179,8 @@ def http_limit(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_geom')
 @app.route("catalyst/features/{collection}/items/geom")
 def http_geom(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, Exensions applied:
+        - Geom'''
     response = construct_response(
         req,
         GeomSchema,
@@ -187,6 +192,8 @@ def http_geom(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_col')
 @app.route("catalyst/features/multi-collection/items/col")
 def http_col(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, Exensions applied:
+        - Col'''
     response = construct_response(
         req,
         ColSchema,
@@ -198,6 +205,9 @@ def http_col(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_limit_geom')
 @app.route("catalyst/features/{collection}/items/limit-geom")
 def http_limit_geom(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, Exensions applied:
+        - Limit
+        - Geom'''
     response = construct_response(
         req,
         LimitGeomSchema,
@@ -209,6 +219,9 @@ def http_limit_geom(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_limit_col')
 @app.route("catalyst/features/multi-collection/items/limit-col")
 def http_limit_col(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, Exensions applied:
+        - Limit
+        - Col'''
     response = construct_response(
         req,
         LimitColSchema,
@@ -220,6 +233,9 @@ def http_limit_col(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_geom_col')
 @app.route("catalyst/features/multi-collection/items/geom-col")
 def http_geom_col(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, Exensions applied:
+        - Geom
+        - Col'''
     response = construct_response(
         req,
         GeomColSchema,
@@ -231,6 +247,10 @@ def http_geom_col(req: HttpRequest) -> HttpResponse:
 @app.function_name('http_limit_geom_col')
 @app.route("catalyst/features/multi-collection/items/limit-geom-col")
 def http_limit_geom_col(req: HttpRequest) -> HttpResponse:
+    '''Azure function, OS NGD API - Features, Exensions applied:
+        - Limit
+        - Geom
+        - Col'''
     response = construct_response(
         req,
         LimitGeomColSchema,
