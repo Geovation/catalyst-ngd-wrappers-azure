@@ -1,8 +1,11 @@
 import json
-from azure.functions import HttpResponse
+from azure.functions import HttpRequest, HttpResponse
 from marshmallow.exceptions import ValidationError
-from schemas import ColSchema
-from function_app import AzureRequest
+from schemas import LatestCollectionsSchema, ColSchema
+from function_app import AzureSerialisedRequest
+
+from catalyst_ngd_wrappers.ngd_api_wrappers import \
+    get_latest_collection_versions, get_specific_latest_collections
 
 def remove_query_params(url: str) -> str:
     '''Removes query parameters from a URL.'''
@@ -20,19 +23,16 @@ def handle_error(
     assert error or description, "Either error or description must be provided."
     if not description:
         description = str(error)
-    error_body = json.dumps({
+    error_body = {
         "code": code,
         "description": description,
         "errorSource": "Catalyst Wrapper"
-    })
-    return HttpResponse(
-        body = error_body,
-        mimetype = "application/json",
-        status_code = code
-    )
+    }
+    return error_body
 
-def construct_response(
-    data: AzureRequest,
+
+def construct_features_response(
+    data: AzureSerialisedRequest,
     schema_class: type,
     ngd_api_func: callable
 ) -> dict:
@@ -91,3 +91,45 @@ def construct_response(
         #track_event('OS NGD API - Features', custom_dimensions=custom_dimensions)
 
     return response_data
+
+def construct_collections_response(data: AzureSerialisedRequest) -> HttpResponse:
+    if data.method != 'GET':
+        return handle_error(
+            description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",
+            code = 405
+        )
+
+    schema = LatestCollectionsSchema()
+    params = data.params
+    fail_condition1 = len(params) > 1
+    fail_condition2 = len(params) == 1 and not params.get('recent-update-days')
+    if fail_condition1 or fail_condition2:
+        return handle_error(
+            code = 400,
+            description = "The only supported query parameter is 'recent-update-days'.",
+        )
+
+    collection = data.route_params.get('collection')
+    try:
+        parsed_params = schema.load(params)
+    except ValidationError as e:
+        return handle_error(e)
+
+    custom_dimensions = {
+        f'query_params.{str(k)}': str(v)
+        for k, v in parsed_params.items()
+    }
+    custom_dimensions.pop('key', None)
+    custom_dimensions.update({
+        'method': 'GET',
+        'url.path': data.url,
+    })
+    if collection:
+        data = get_specific_latest_collections([collection], **parsed_params)
+        custom_dimensions['url.path_params.collection'] = collection
+    else:
+        data = get_latest_collection_versions(**parsed_params)
+
+    #track_event('HTTP_Request', custom_dimensions=custom_dimensions)
+
+    return data
