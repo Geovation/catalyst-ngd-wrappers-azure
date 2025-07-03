@@ -43,3 +43,92 @@ def aws_process_request(event: dict, **kwargs) -> dict:
         return serialised_response
     except Exception as e:
         handle_error(error = e, code = 500)
+
+def lambda_handler_base(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, No extensions applied.'''
+    response = aws_process_request(
+        event=event,
+        schema_class=CatalystBaseSchema,
+        ngd_api_func=items
+    )
+    return response
+
+
+def lambda_handler_limit(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, Exensions applied:
+        - Limit'''
+    response = aws_process_request(
+        event=event,
+        schema_class=LimitSchema,
+        ngd_api_func=items_limit
+    )
+    return response
+
+def lambda_handler_geom(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, Exensions applied:
+        - Geom'''
+    response = aws_process_request(
+        event=event,
+        schema_class=GeomSchema,
+        ngd_api_func=items_geom
+    )
+    return response
+
+def lambda_handler_col(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, Exensions applied:
+        - Col'''
+    response = aws_process_request(
+        event=event,
+        schema_class=ColSchema,
+        ngd_api_func=items_col
+    )
+    return response
+
+
+def lambda_handler_limit_geom(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, Exensions applied:
+        - Limit
+        - Geom'''
+    response = aws_process_request(
+        event=event,
+        schema_class=LimitGeomSchema,
+        ngd_api_func=items_limit_geom
+    )
+    return response
+
+
+def lambda_handler_limit_col(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, Exensions applied:
+        - Limit
+        - Col'''
+    response = aws_process_request(
+        event=event,
+        schema_class=LimitColSchema,
+        ngd_api_func=items_limit_col
+    )
+    return response
+
+
+def lambda_handler_geom_col(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, Exensions applied:
+        - Geom
+        - Col'''
+    response = aws_process_request(
+        event=event,
+        schema_class=GeomColSchema,
+        ngd_api_func=items_geom_col
+    )
+    return response
+
+
+def lambda_handler_limit_geom_col(event: dict, context: dict) -> dict:
+    '''AWS Lambda function, OS NGD API - Features, Exensions applied:
+        - Limit
+        - Geom
+        - Col'''
+    response = aws_process_request(
+        event=event,
+        schema_class=LimitGeomColSchema,
+        ngd_api_func=items_limit_geom_col
+    )
+    return response
