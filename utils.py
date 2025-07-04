@@ -3,7 +3,7 @@ from marshmallow.exceptions import ValidationError
 from catalyst_ngd_wrappers.ngd_api_wrappers import \
     get_latest_collection_versions, get_specific_latest_collections
 
-from schemas import LatestCollectionsSchema, ColSchema
+from schemas import CollectionsSchema, ColSchema
 
 def remove_query_params(url: str) -> str:
     '''Removes query parameters from a URL.'''
@@ -124,15 +124,8 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
             code = 405
         )
 
-    schema = LatestCollectionsSchema()
+    schema = CollectionsSchema()
     params = data.params
-    fail_condition1 = len(params) > 1
-    fail_condition2 = len(params) == 1 and not params.get('recent-update-days')
-    if fail_condition1 or fail_condition2:
-        return handle_error(
-            code = 400,
-            description = "The only supported query parameter is 'recent-update-days'.",
-        )
 
     collection = data.route_params.get('collection')
     try:
@@ -140,21 +133,29 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
     except ValidationError as e:
         return handle_error(e)
 
-    custom_dimensions = {
-        f'query_params.{str(k)}': str(v)
-        for k, v in parsed_params.items()
-    }
-    custom_dimensions.pop('key', None)
-    custom_dimensions.update({
-        'method': 'GET',
-        'url.path': data.url,
-    })
+    log_request_details = parsed_params.pop('log_request_details', True)
+    if collection and parsed_params:
+        return handle_error(
+            code = 400,
+            description = "The only supported query parameter for this endpoint is 'log-request-details'",
+        )
+    recent_update_days = parsed_params.pop('recent_update_days', None)
+    if parsed_params:
+        return handle_error(
+            code = 400,
+            description = "The only supported query parameters for this endpoint are: 'recent-update-days', 'log-request-details'",
+        )
+
     if collection:
-        data = get_specific_latest_collections([collection], **parsed_params)
-        custom_dimensions['url.path_params.collection'] = collection
+        response_data = get_specific_latest_collections(collection=[collection])
     else:
-        data = get_latest_collection_versions(**parsed_params)
+        response_data = get_latest_collection_versions(recent_update_days=recent_update_days)
 
-    #track_event('HTTP_Request', custom_dimensions=custom_dimensions)
+    if log_request_details:
+        custom_dimensions = {
+            'method': 'GET',
+            'url.path': data.url,
+        }
+        #track_event('HTTP_Request', custom_dimensions=custom_dimensions)
 
-    return data
+    return response_data

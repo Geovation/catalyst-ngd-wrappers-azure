@@ -6,7 +6,7 @@ from catalyst_ngd_wrappers.ngd_api_wrappers import items, items_limit, items_geo
 from utils import BaseSerialisedRequest, handle_error, \
     construct_features_response, construct_collections_response
 
-from schemas import CatalystBaseSchema, LimitSchema, GeomSchema, ColSchema, \
+from schemas import FeaturesBaseSchema, LimitSchema, GeomSchema, ColSchema, \
     LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 
 s3_client = boto3.client('s3')
@@ -70,7 +70,7 @@ def lambda_handler_base(event: dict, context: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, No extensions applied.'''
     response = aws_process_request(
         event=event,
-        schema_class=CatalystBaseSchema,
+        schema_class=FeaturesBaseSchema,
         ngd_api_func=items
     )
     return response
