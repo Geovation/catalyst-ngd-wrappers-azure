@@ -11,28 +11,29 @@ Schemas for the API endpoints.
 from marshmallow import Schema, INCLUDE
 from marshmallow.fields import Integer, String, Boolean, List
 
-class LatestCollectionsSchema(Schema):
-    '''Schema for the latest collections endpoint'''
-    recent_update_days = Integer(data_key='recent-update-days', required=False)
+
+class BaseSchema(Schema):
+    '''Abstract schema for logs queries'''
+    log_request_details = Boolean(data_key='log-request-details', required=False)
 
     class Meta:
         '''Pass other fields forward to the API'''
         unknown = INCLUDE
 
-class CatalystBaseSchema(Schema):
+class CollectionsSchema(BaseSchema):
+    '''Schema for the latest collections endpoint'''
+    recent_update_days = Integer(data_key='recent-update-days', required=False)
+
+class FeaturesBaseSchema(BaseSchema):
     '''Base schema for all queries'''
     wkt = String(required=False)
     use_latest_collection = Boolean(data_key='use-latest-collection', required=False)
 
-    class Meta:
-        '''Pass other fields forward to the API'''
-        unknown = INCLUDE
-
-class AbstractHierarchicalSchema(CatalystBaseSchema):
+class AbstractHierarchicalSchema(FeaturesBaseSchema):
     '''Abstract schema for hierarchical queries'''
     hierarchical_output = Boolean(data_key='hierarchical-output', required=False)
 
-class LimitSchema(CatalystBaseSchema):
+class LimitSchema(FeaturesBaseSchema):
     '''limit is the maximum number of items to return'''
     request_limit = Integer(data_key='request-limit', required=False)
 

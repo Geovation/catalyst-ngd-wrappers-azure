@@ -3,7 +3,7 @@ from marshmallow.exceptions import ValidationError
 from catalyst_ngd_wrappers.ngd_api_wrappers import \
     get_latest_collection_versions, get_specific_latest_collections
 
-from schemas import LatestCollectionsSchema, ColSchema
+from schemas import CollectionsSchema, ColSchema
 
 def remove_query_params(url: str) -> str:
     '''Removes query parameters from a URL.'''
@@ -124,7 +124,7 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
             code = 405
         )
 
-    schema = LatestCollectionsSchema()
+    schema = CollectionsSchema()
     params = data.params
     fail_condition1 = len(params) > 1
     fail_condition2 = len(params) == 1 and not params.get('recent-update-days')
