@@ -1,8 +1,9 @@
 from marshmallow.exceptions import ValidationError
-from schemas import LatestCollectionsSchema, ColSchema
 
 from catalyst_ngd_wrappers.ngd_api_wrappers import \
     get_latest_collection_versions, get_specific_latest_collections
+
+from schemas import LatestCollectionsSchema, ColSchema
 
 def remove_query_params(url: str) -> str:
     '''Removes query parameters from a URL.'''
@@ -34,7 +35,7 @@ def handle_error(
     description: str = None,
     code: int = 400
 ) -> dict:
-    """Formats and configures errors, returning a JSON response."""
+    '''Formats and configures errors, returning a JSON response.'''
     assert error or description, "Either error or description must be provided."
     if not description:
         description = str(error)
@@ -108,6 +109,15 @@ def construct_features_response(
     return response_data
 
 def construct_collections_response(data: BaseSerialisedRequest) -> dict:
+    ''' Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
+    Handles parameter validation and telemetry tracking.
+    Input: data - BaseSerialisedRequest object containing request details. This includes:
+        - method: HTTP method (e.g., 'GET')
+        - url: URL of the request
+        - params: Query parameters as a dictionary
+        - route_params: Route parameters as a dictionary
+        - headers: Request headers as a dictionary
+    '''
     if data.method != 'GET':
         return handle_error(
             description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",

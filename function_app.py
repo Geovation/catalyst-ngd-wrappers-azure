@@ -35,6 +35,9 @@ class AzureSerialisedRequest(BaseSerialisedRequest):
 
 
 def azure_serialise_response(data: dict) -> HttpResponse:
+    '''
+    Serialises the response data into an HttpResponse object suitable for Azure Functions.
+    '''
 
     code = data.get('code', 200)
     json_data = json.dumps(data)
@@ -51,6 +54,7 @@ def azure_process_request(
         construct_response_func: callable = construct_features_response,
         **kwargs
     ) -> HttpResponse:
+    '''Processes Azure HTTP requests, serialising the request and constructing a response.'''
     try:
         data = AzureSerialisedRequest(req = req)
         response = construct_response_func(data = data, **kwargs)

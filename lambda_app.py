@@ -26,6 +26,9 @@ class AWSSerialisedRequest(BaseSerialisedRequest):
         super().__init__(method, url, params, route_params, headers)
 
 def aws_serialise_response(data: dict) -> dict:
+    '''
+    Serialises the response data into a format suitable for AWS Lambda.
+    '''
 
     code = data.pop('code', 200)
     response = {
@@ -41,6 +44,7 @@ def aws_process_request(
         construct_response_func: callable = construct_features_response,
         **kwargs
     ) -> dict:
+    '''Processes AWS HTTP requests, serialising the request and constructing a response.'''
     try:
         data = AWSSerialisedRequest(event)
         response = construct_response_func(data = data, **kwargs)
