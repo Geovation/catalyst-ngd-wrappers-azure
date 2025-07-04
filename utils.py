@@ -134,29 +134,23 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
         return handle_error(e)
 
     log_request_details = parsed_params.pop('log_request_details', True)
-
-    fail_condition1 = len(parsed_params) > 1
-    fail_condition2 = len(parsed_params) == 1 and not parsed_params.get('recent_update_days')
-    if fail_condition1 or fail_condition2:
+    if collection and parsed_params:
         return handle_error(
             code = 400,
-            description = "The only supported query parameters are: 'recent-update-days', 'log-request-details'",
+            description = "The only supported query parameter for this endpoint is 'log-request-details'",
+        )
+    recent_update_days = parsed_params.pop('recent_update_days', None)
+    if parsed_params:
+        return handle_error(
+            code = 400,
+            description = "The only supported query parameters for this endpoint are: 'recent-update-days', 'log-request-details'",
         )
 
-    custom_params = {
-        k: parsed_params.pop(k)
-        for k in schema.fields.keys()
-        if k in parsed_params
-    }
 
     if collection:
-        response_data = get_specific_latest_collections(
-            collection=[collection],
-            params=parsed_params,
-            **custom_params
-        )
+        response_data = get_specific_latest_collections(collection=[collection], recent_update_days=recent_update_days)
     else:
-        response_data = get_latest_collection_versions(params=parsed_params, **custom_params)
+        response_data = get_latest_collection_versions(recent_update_days=recent_update_days)
 
     if log_request_details:
         custom_dimensions = {
