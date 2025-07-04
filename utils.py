@@ -140,6 +140,12 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
     except ValidationError as e:
         return handle_error(e)
 
+    custom_params = {
+        k: parsed_params.pop(k)
+        for k in schema.fields.keys()
+        if k  in parsed_params
+    }
+
     custom_dimensions = {
         f'query_params.{str(k)}': str(v)
         for k, v in parsed_params.items()
@@ -150,10 +156,14 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
         'url.path': data.url,
     })
     if collection:
-        data = get_specific_latest_collections([collection], **parsed_params)
+        data = get_specific_latest_collections(
+            collection=[collection],
+            query_params=parsed_params,
+            **custom_params
+        )
         custom_dimensions['url.path_params.collection'] = collection
     else:
-        data = get_latest_collection_versions(**parsed_params)
+        data = get_latest_collection_versions(query_params=parsed_params, **custom_params)
 
     #track_event('HTTP_Request', custom_dimensions=custom_dimensions)
 
