@@ -146,9 +146,8 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
             description = "The only supported query parameters for this endpoint are: 'recent-update-days', 'log-request-details'",
         )
 
-
     if collection:
-        response_data = get_specific_latest_collections(collection=[collection], recent_update_days=recent_update_days)
+        response_data = get_specific_latest_collections(collection=[collection])
     else:
         response_data = get_latest_collection_versions(recent_update_days=recent_update_days)
 
