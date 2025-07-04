@@ -9,7 +9,7 @@ from azure.monitor.opentelemetry import configure_azure_monitor
 from catalyst_ngd_wrappers.ngd_api_wrappers import items, items_limit, items_geom, \
     items_col, items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
 
-from schemas import CatalystBaseSchema, LimitSchema, GeomSchema, \
+from schemas import FeaturesBaseSchema, LimitSchema, GeomSchema, ColSchema, \
     LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 
 from utils import BaseSerialisedRequest, handle_error, \
@@ -83,7 +83,7 @@ def http_base(req: HttpRequest) -> HttpResponse:
     '''Azure function, OS NGD API - Features, No extensions applied.'''
     response = azure_process_request(
         req=req,
-        schema_class=CatalystBaseSchema,
+        schema_class=FeaturesBaseSchema,
         ngd_api_func=items
     )
     return response

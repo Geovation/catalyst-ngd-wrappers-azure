@@ -126,13 +126,6 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
 
     schema = CollectionsSchema()
     params = data.params
-    fail_condition1 = len(params) > 1
-    fail_condition2 = len(params) == 1 and not params.get('recent-update-days')
-    if fail_condition1 or fail_condition2:
-        return handle_error(
-            code = 400,
-            description = "The only supported query parameter is 'recent-update-days'.",
-        )
 
     collection = data.route_params.get('collection')
     try:
@@ -141,6 +134,15 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
         return handle_error(e)
 
     log_request_details = parsed_params.pop('log_request_details', True)
+
+    fail_condition1 = len(parsed_params) > 1
+    fail_condition2 = len(parsed_params) == 1 and not parsed_params.get('recent_update_days')
+    if fail_condition1 or fail_condition2:
+        return handle_error(
+            code = 400,
+            description = "The only supported query parameters are: 'recent-update-days', 'log-request-details'",
+        )
+
     custom_params = {
         k: parsed_params.pop(k)
         for k in schema.fields.keys()
@@ -148,13 +150,13 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
     }
 
     if collection:
-        data = get_specific_latest_collections(
+        response_data = get_specific_latest_collections(
             collection=[collection],
-            query_params=parsed_params,
+            params=parsed_params,
             **custom_params
         )
     else:
-        data = get_latest_collection_versions(query_params=parsed_params, **custom_params)
+        response_data = get_latest_collection_versions(params=parsed_params, **custom_params)
 
     if log_request_details:
         custom_dimensions = {
@@ -163,4 +165,4 @@ def construct_collections_response(data: BaseSerialisedRequest) -> dict:
         }
         #track_event('HTTP_Request', custom_dimensions=custom_dimensions)
 
-    return data
+    return response_data
