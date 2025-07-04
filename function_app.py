@@ -3,18 +3,17 @@ import json
 import azure.functions as func
 
 from azure.functions import HttpRequest, HttpResponse
-from azure.monitor.events.extension import track_event
+#from azure.monitor.events.extension import track_event
 from azure.monitor.opentelemetry import configure_azure_monitor
 
-from marshmallow.exceptions import ValidationError
+from catalyst_ngd_wrappers.ngd_api_wrappers import items, items_limit, items_geom, \
+    items_col, items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
 
-from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_versions, \
-    get_specific_latest_collections, items, items_limit, items_geom, items_col, \
-    items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
+from schemas import CatalystBaseSchema, LimitSchema, GeomSchema, \
+    LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 
-from schemas import LatestCollectionsSchema, CatalystBaseSchema, LimitSchema, GeomSchema, \
-    ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
-from utils import remove_query_params, handle_error, construct_features_response, construct_collections_response
+from utils import BaseSerialisedRequest, handle_error, \
+    construct_features_response, construct_collections_response
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -46,10 +45,14 @@ def azure_serialise_response(data: dict) -> HttpResponse:
     return response
 
 
-def azure_process_request(req: HttpRequest, **kwargs) -> HttpResponse:
+def azure_process_request(
+        req: HttpRequest,
+        construct_response_func: callable = construct_features_response,
+        **kwargs
+    ) -> HttpResponse:
     try:
         data = AzureSerialisedRequest(req = req)
-        response = construct_features_response(data = data, **kwargs)
+        response = construct_response_func(data = data, **kwargs)
         serialised_response = azure_serialise_response(response)
         return serialised_response
     except Exception as e:
@@ -62,7 +65,10 @@ def azure_process_request(req: HttpRequest, **kwargs) -> HttpResponse:
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
     '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
-    response = azure_process_request(req=req)
+    response = azure_process_request(
+        req = req,
+        construct_response_func = construct_collections_response
+    )
     return response
 
 

@@ -1,8 +1,6 @@
-import json
-from azure.functions import HttpRequest, HttpResponse
 from marshmallow.exceptions import ValidationError
 from schemas import LatestCollectionsSchema, ColSchema
-from function_app import AzureSerialisedRequest
+from function_app import AzureSerialisedRequest, AWSSerialisedRequest
 
 from catalyst_ngd_wrappers.ngd_api_wrappers import \
     get_latest_collection_versions, get_specific_latest_collections
@@ -13,12 +11,23 @@ def remove_query_params(url: str) -> str:
         return url.split('?')[0]
     return url
 
+class BaseSerialisedRequest:
+    '''
+    A base class to represent an HTTP request with its parameters and headers.
+    '''
+
+    def __init__(self, method: str, url: str, params: dict, route_params: dict, headers: dict) -> None:
+        self.method = method
+        self.url = url
+        self.params = params
+        self.route_params = route_params
+        self.headers = headers
 
 def handle_error(
     error: Exception = None,
     description: str = None,
     code: int = 400
-) -> HttpResponse:
+) -> dict:
     """Formats and configures errors, returning a JSON response."""
     assert error or description, "Either error or description must be provided."
     if not description:
@@ -32,7 +41,7 @@ def handle_error(
 
 
 def construct_features_response(
-    data: AzureSerialisedRequest,
+    data: AzureSerialisedRequest | AWSSerialisedRequest,
     schema_class: type,
     ngd_api_func: callable
 ) -> dict:
@@ -92,7 +101,7 @@ def construct_features_response(
 
     return response_data
 
-def construct_collections_response(data: AzureSerialisedRequest) -> HttpResponse:
+def construct_collections_response(data: AzureSerialisedRequest) -> dict:
     if data.method != 'GET':
         return handle_error(
             description = "The HTTP method requested is not supported. This endpoint only supports 'GET' requests.",

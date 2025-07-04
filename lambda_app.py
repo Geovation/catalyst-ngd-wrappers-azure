@@ -1,17 +1,14 @@
 import boto3
-from aws_lambda_typing.events import S3Event
-from aws_lambda_typing.context import Context
 
-s3_client = boto3.client('s3')
+from utils import handle_error, construct_response
 
-from catalyst_ngd_wrappers.ngd_api_wrappers import get_latest_collection_versions, \
-    get_specific_latest_collections, items, items_limit, items_geom, items_col, \
+from catalyst_ngd_wrappers.ngd_api_wrappers import items, items_limit, items_geom, items_col, \
     items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
 
-from schemas import LatestCollectionsSchema, CatalystBaseSchema, LimitSchema, GeomSchema, \
+from schemas import CatalystBaseSchema, LimitSchema, GeomSchema, \
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
-from utils import remove_query_params, handle_error, construct_response
 
+s3_client = boto3.client('s3')
 
 class AWSSerialisedRequest:
     '''
