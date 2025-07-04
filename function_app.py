@@ -20,17 +20,18 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 configure_azure_monitor()
 
 
-class AzureSerialisedRequest:
+class AzureSerialisedRequest(BaseSerialisedRequest):
     '''
-    A class to represent an HTTP request with its parameters and headers.
+    A class to represent an Azure HTTP request with its parameters and headers.
     '''
 
     def __init__(self, req: HttpRequest) -> None:
-        self.method = req.method
-        self.url = req.url
-        self.params = {**req.params}
-        self.route_params = req.route_params
-        self.headers = req.headers.__dict__.get('__http_headers__', {})
+        method = req.method
+        url = req.url
+        params = {**req.params}
+        route_params = req.route_params
+        headers = req.headers.__dict__.get('__http_headers__', {})
+        super().__init__(method, url, params, route_params, headers)
 
 
 def azure_serialise_response(data: dict) -> HttpResponse:

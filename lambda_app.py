@@ -1,27 +1,29 @@
 import boto3
 
-from utils import handle_error, construct_response
-
 from catalyst_ngd_wrappers.ngd_api_wrappers import items, items_limit, items_geom, items_col, \
     items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
+
+from utils import BaseSerialisedRequest, handle_error, \
+    construct_features_response, construct_collections_response
 
 from schemas import CatalystBaseSchema, LimitSchema, GeomSchema, \
     ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 
 s3_client = boto3.client('s3')
 
-class AWSSerialisedRequest:
+class AWSSerialisedRequest(BaseSerialisedRequest):
     '''
-    A class to represent an HTTP request with its parameters and headers.
+    A class to represent an AWS HTTP request with its parameters and headers.
     '''
 
     def __init__(self, event: dict) -> None:
-        self.method = event.get('http').get('method')
+        method = event.get('http').get('method')
         req_context = event.get('requestContext', {})
-        self.url = req_context.get('domainName') + req_context.get('path')
-        self.params = event.get('queryStringParameters', {})
-        self.route_params = event.get('pathParameters')
-        self.headers = event.get('headers', {})
+        url = req_context.get('domainName') + req_context.get('path')
+        params = event.get('queryStringParameters', {})
+        route_params = event.get('pathParameters')
+        headers = event.get('headers', {})
+        super().__init__(method, url, params, route_params, headers)
 
 def aws_serialise_response(data: dict) -> dict:
 
@@ -34,10 +36,14 @@ def aws_serialise_response(data: dict) -> dict:
     }
     return response
 
-def aws_process_request(event: dict, **kwargs) -> dict:
+def aws_process_request(
+        event: dict,
+        construct_response_func: callable = construct_features_response,
+        **kwargs
+    ) -> dict:
     try:
         data = AWSSerialisedRequest(event)
-        response = construct_response(data = data, **kwargs)
+        response = construct_response_func(data = data, **kwargs)
         serialised_response = aws_serialise_response(response)
         return serialised_response
     except Exception as e:
@@ -49,7 +55,10 @@ def http_latest_collections(event: dict, context: dict) -> dict:
     '''AWS Lambda function.
     Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
-    response = aws_process_request(event = event)
+    response = aws_process_request(
+        event = event,
+        construct_response_func = construct_collections_response
+    )
     return response
 
 
