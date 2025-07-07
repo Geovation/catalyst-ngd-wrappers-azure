@@ -55,7 +55,7 @@ def aws_process_request(
         return aws_serialise_response(bare_error)
 
 
-def http_latest_collections(event: dict, context: dict) -> dict:
+def aws_latest_collections(event: dict) -> dict:
     '''AWS Lambda function.
     Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
@@ -66,7 +66,7 @@ def http_latest_collections(event: dict, context: dict) -> dict:
     return response
 
 
-def lambda_handler_base(event: dict, context: dict) -> dict:
+def aws_base(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, No extensions applied.'''
     response = aws_process_request(
         event=event,
@@ -76,7 +76,7 @@ def lambda_handler_base(event: dict, context: dict) -> dict:
     return response
 
 
-def lambda_handler_limit(event: dict, context: dict) -> dict:
+def aws_limit(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, Exensions applied:
         - Limit'''
     response = aws_process_request(
@@ -86,7 +86,7 @@ def lambda_handler_limit(event: dict, context: dict) -> dict:
     )
     return response
 
-def lambda_handler_geom(event: dict, context: dict) -> dict:
+def aws_geom(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, Exensions applied:
         - Geom'''
     response = aws_process_request(
@@ -96,7 +96,7 @@ def lambda_handler_geom(event: dict, context: dict) -> dict:
     )
     return response
 
-def lambda_handler_col(event: dict, context: dict) -> dict:
+def aws_col(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, Exensions applied:
         - Col'''
     response = aws_process_request(
@@ -107,7 +107,7 @@ def lambda_handler_col(event: dict, context: dict) -> dict:
     return response
 
 
-def lambda_handler_limit_geom(event: dict, context: dict) -> dict:
+def aws_limit_geom(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, Exensions applied:
         - Limit
         - Geom'''
@@ -119,7 +119,7 @@ def lambda_handler_limit_geom(event: dict, context: dict) -> dict:
     return response
 
 
-def lambda_handler_limit_col(event: dict, context: dict) -> dict:
+def aws_limit_col(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, Exensions applied:
         - Limit
         - Col'''
@@ -131,7 +131,7 @@ def lambda_handler_limit_col(event: dict, context: dict) -> dict:
     return response
 
 
-def lambda_handler_geom_col(event: dict, context: dict) -> dict:
+def aws_geom_col(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, Exensions applied:
         - Geom
         - Col'''
@@ -143,7 +143,7 @@ def lambda_handler_geom_col(event: dict, context: dict) -> dict:
     return response
 
 
-def lambda_handler_limit_geom_col(event: dict, context: dict) -> dict:
+def aws_limit_geom_col(event: dict) -> dict:
     '''AWS Lambda function, OS NGD API - Features, Exensions applied:
         - Limit
         - Geom
@@ -154,3 +154,16 @@ def lambda_handler_limit_geom_col(event: dict, context: dict) -> dict:
         ngd_api_func=items_limit_geom_col
     )
     return response
+
+
+ROUTES = {
+    'base': aws_base,
+    'limit': aws_limit,
+    'geom': aws_geom,
+    'col': aws_col,
+    'limit_geom': aws_limit_geom,
+    'limit_col': aws_limit_col,
+    'geom_col': aws_geom_col,
+    'limit_geom_col': aws_limit_geom_col,
+    'latest_collections': aws_latest_collections
+}
