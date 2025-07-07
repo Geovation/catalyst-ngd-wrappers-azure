@@ -177,8 +177,9 @@ def lambda_handler(event: dict, context) -> dict:
     if route in ROUTES:
         return ROUTES[route](event)
     else:
-        return aws_serialise_response({
-            'statusCode': 404,
-            'headers': {'Content-Type': 'application/json'},
-            'body': {'error': 'Not Found'}
-        })
+        return {
+            "isBase64Encoded": False,
+            "statusCode": 404,
+            "headers": {"Content-Type": "application/json"},
+            "body": {'error': 'Not Found', 'message': f'No handler for route: {route}'}
+        }
