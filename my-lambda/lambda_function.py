@@ -167,3 +167,18 @@ ROUTES = {
     'limit_geom_col': aws_limit_geom_col,
     'latest_collections': aws_latest_collections
 }
+
+def lambda_handler(event: dict, context) -> dict:
+    '''
+    AWS Lambda handler function.
+    Routes the request to the appropriate function based on the event data.
+    '''
+    route = event.get('routeKey', 'base')
+    if route in ROUTES:
+        return ROUTES[route](event)
+    else:
+        return aws_serialise_response({
+            'statusCode': 404,
+            'headers': {'Content-Type': 'application/json'},
+            'body': {'error': 'Not Found'}
+        })
