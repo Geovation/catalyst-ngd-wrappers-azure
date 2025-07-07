@@ -1,0 +1,6 @@
+regex==2024.11.6
+python-dotenv==1.0.1
+marshmallow==3.24.1
+flask-marshmallow==1.3.0
+aws_lambda_typing==2.20.0
+boto3==1.39.1
