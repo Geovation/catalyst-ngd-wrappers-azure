@@ -69,7 +69,7 @@ jobs:
         with:
           app-name: 'catalyst-ngd-wrapper-functions'
           slot-name: 'Production'
-          package: .
+          package: '.'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C0D73DD15A374164B80C5E1D694D85E7 }}
           scm-do-build-during-deployment: true
           enable-oryx-build: true
