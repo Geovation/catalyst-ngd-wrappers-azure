@@ -14,4 +14,3 @@ azure-monitor-opentelemetry==1.6.8
 azure-monitor-events-extension==0.1.0
 azfunctionsmonitor==0.1.112
 git+https://github.com/Geovation/catalyst-ngd-wrappers-python
-boto3==1.39.1
