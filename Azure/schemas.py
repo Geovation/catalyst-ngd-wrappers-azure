@@ -8,12 +8,13 @@ Schemas for the API endpoints.
 '''
 
 from marshmallow import Schema, INCLUDE
-from marshmallow.fields import Integer, String, Boolean, List
+from marshmallow.fields import Integer, String, Boolean, List, Dict
 
 
 class BaseSchema(Schema):
     '''Abstract schema for logs queries'''
     log_request_details = Boolean(data_key='log-request-details', required=False)
+    filter_params = Dict(String(), String(), required=False)
 
     class Meta:
         '''Pass other fields forward to the API'''
