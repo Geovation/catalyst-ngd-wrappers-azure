@@ -125,6 +125,8 @@ graph TD
     - Cloud server: https://catalyst-ngd-wrapper-functions.azurewebsites.net/api/
     - Local azurite deployment: http://localhost:7071/api/
 
+- catalyst/latest-collections
+- catalyst/latest-collections/{collectionId}
 - catalyst/features/collections/{collectionId}/items
 - catalyst/features/{collectionId}/items/limit
 - catalyst/features/{collectionId}/items/geom
