@@ -125,14 +125,14 @@ graph TD
     - Cloud server: https://catalyst-ngd-wrapper-functions.azurewebsites.net/api/
     - Local azurite deployment: http://localhost:7071/api/
 
-- catalyst/features/ngd/ofa/v1/collections/{collectionId}/items
-- catalyst/features/ngd/ofa/v1/collections/{collectionId}/items/limit
-- catalyst/features/ngd/ofa/v1/collections/{collectionId}/items/geom
-- catalyst/features/ngd/ofa/v1/collections/multi-collection/items/col
-- catalyst/features/ngd/ofa/v1/collections/{collectionId}/items/limit-geom
-- catalyst/features/ngd/ofa/v1/collections/multi-collection/items/limit-col
-- catalyst/features/ngd/ofa/v1/collections/multi-collection/items/geom-col
-- catalyst/features/ngd/ofa/v1/collections/multi-collection/items/limit-geom-col
+- catalyst/features/collections/{collectionId}/items
+- catalyst/features/{collectionId}/items/limit
+- catalyst/features/{collectionId}/items/geom
+- catalyst/features/multi-collection/items/col
+- catalyst/features/{collectionId}/items/limit-geom
+- catalyst/features/multi-collection/items/limit-col
+- catalyst/features/multi-collection/items/geom-col
+- catalyst/features/multi-collection/items/limit-geom-col
 
 # Local Deployment with Azurite
 1. Create a .env file with OS DataHub account details, as specified in .env.sample
