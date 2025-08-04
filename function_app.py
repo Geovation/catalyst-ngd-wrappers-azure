@@ -19,7 +19,6 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 # configure_azure_monitor()
 
-
 class AzureSerialisedRequest(BaseSerialisedRequest):
     '''
     A class to represent an Azure HTTP request with its parameters and headers.
@@ -66,7 +65,7 @@ def azure_process_request(
 
 
 @app.function_name('http_latest_single_col')
-@app.route("catalyst/features/latest-collections/{collection?}")
+@app.route("catalyst/latest-collections/{collection?}")
 def http_latest_collections(req: HttpRequest) -> HttpResponse:
     '''Handles the processing of API requests to retrieve OS NGD collections, either all or a specific one.
     Handles parameter validation and telemetry tracking.'''
