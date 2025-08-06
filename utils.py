@@ -87,7 +87,7 @@ def construct_features_response(
         custom_params['collection'] = data.route_params.get('collection')
 
     response_data = ngd_api_func(
-        query_params=parsed_params,
+        params=parsed_params,
         headers=data.headers,
         **custom_params
     )
