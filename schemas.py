@@ -8,13 +8,12 @@ Schemas for the API endpoints.
 '''
 
 from marshmallow import Schema, INCLUDE
-from marshmallow.fields import Integer, String, Boolean, List, Dict
+from marshmallow.fields import Integer, String, Boolean, List
 
 
 class BaseSchema(Schema):
     '''Abstract schema for logs queries'''
     log_request_details = Boolean(data_key='log-request-details', required=False)
-    filter_params = Dict(String(), String(), required=False)
 
     class Meta:
         '''Pass other fields forward to the API'''
@@ -28,6 +27,7 @@ class FeaturesBaseSchema(BaseSchema):
     '''Base schema for all queries'''
     wkt = String(required=False)
     use_latest_collection = Boolean(data_key='use-latest-collection', required=False)
+    authenticate = Boolean(required=False)
 
 class AbstractHierarchicalSchema(FeaturesBaseSchema):
     '''Abstract schema for hierarchical queries'''
@@ -35,7 +35,7 @@ class AbstractHierarchicalSchema(FeaturesBaseSchema):
 
 class LimitSchema(FeaturesBaseSchema):
     '''limit is the maximum number of items to return'''
-    limit = Integer(required=False)
+    limit = Integer(data_key='limit', required=False)
     request_limit = Integer(data_key='request-limit', required=False)
 
 class GeomSchema(AbstractHierarchicalSchema):
