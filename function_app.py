@@ -6,11 +6,11 @@ from azure.functions import HttpRequest, HttpResponse
 #from azure.monitor.events.extension import track_event
 from azure.monitor.opentelemetry import configure_azure_monitor
 
-from catalyst_ngd_wrappers.ngd_api_wrappers import items, items_limit, items_geom, \
+from catalyst_ngd_wrappers import items, items_limit, items_geom, \
     items_col, items_limit_geom, items_limit_col, items_geom_col, items_limit_geom_col
 
-from catalyst_ngd_wrappers.schemas import FeaturesBaseSchema, LimitSchema, GeomSchema, ColSchema, \
-    LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
+from catalyst_ngd_wrappers.deployment_schemas import FeaturesBaseSchema, LimitSchema, GeomSchema, \
+    ColSchema, LimitGeomSchema, LimitColSchema, GeomColSchema, LimitGeomColSchema
 
 from catalyst_ngd_wrappers.deployment_utils import BaseSerialisedRequest, handle_error, \
     construct_features_response, construct_collections_response
