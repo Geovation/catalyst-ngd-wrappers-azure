@@ -84,8 +84,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Start virtual environment
+      - name: Create and start virtual environment
         run: |
+          python -m venv venv
           source venv/bin/activate
       
       - name: Run Unit Tests
