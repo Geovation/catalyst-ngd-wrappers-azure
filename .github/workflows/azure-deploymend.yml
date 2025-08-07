@@ -78,6 +78,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Python version
         uses: actions/setup-python@v1
@@ -96,4 +98,5 @@ jobs:
         run: |
           pip install requests==2.32.4
           pip install python-dotenv==1.1.1
+          ls
           python -m unittest unit_tests
