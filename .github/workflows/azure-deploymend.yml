@@ -93,12 +93,14 @@ jobs:
           python -m venv venv
           source venv/bin/activate
       
-      - name: Run Unit Tests
-        env:
-          BASE_URL: ${{ secrets.AZURE_BASE_URL }}
-          CLIENT_ID: ${{ secrets.OS_DATAHUB_CLIENT_ID }}
+      - name: Install Unit Test Dependencies
         run: |
           pip install --upgrade pip
           pip install requests==2.32.4
           pip install python-dotenv==1.1.1
-          python -m unittest unit_tests
+
+      - name: Run Unit Tests
+        env:
+          BASE_URL: ${{ secrets.AZURE_BASE_URL }}
+          CLIENT_ID: ${{ secrets.OS_DATAHUB_CLIENT_ID }}
+        run: python -m unittest unit_tests
