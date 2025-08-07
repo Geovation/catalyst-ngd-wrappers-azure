@@ -7,7 +7,7 @@ name: Build and deploy Python project to Azure Function App - catalyst-ngd-wrapp
 on:
   push:
     branches:
-      - feat/api-unit-tests
+      - 'main'
   workflow_dispatch:
 
 env:
@@ -42,7 +42,7 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: python-app
+          name: python-azure-app
           path: |
             release.zip
             !venv/
@@ -58,7 +58,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: python-app
+          name: python-azure-app
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
