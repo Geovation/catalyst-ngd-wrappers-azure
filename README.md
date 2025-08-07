@@ -69,6 +69,7 @@ graph TD
         - _geom_ and _col_ extensions only.
     - **collections**: str (accepts multiple values)
         - _col_ extension only.
+    - **log-request-details**: bool, default True - _Currently unimplemented_
 
 ## Response Specifications
 - **Format**
@@ -84,7 +85,14 @@ graph TD
     - Additional Catalyst attributes
         - **numberOfReqeusts**: int - The number of NGD items requests from which the final response is compiled
         - **numberOfRequestsByCollection**: dict[str: int] - The number of NGD items requests made, split by collection. Only included when _col_ extension applied and _hierarchical-output=False_.
-        - **numberReturnedByCollection**: dict[str: int] - The number of features returned, split by collection. 
+        - **numberReturnedByCollection**: dict[str: int] - The number of features returned, split by collection.
+        - **telemetryData**: dict - Only applies for the base wrapper. Contains a record of the telemetry data which has been logged.
+            - Method
+            - URL Path
+            - Path parameters
+            - Query Parameters
+            - Spatial bounding box of the response
+            - Number returned
 - **Feature-Level Attributes**
     - **id**: str (uuid) - OSID of the feature
     - **collection**: str - Collection the feature belongs to. This is an additional attribute supplied by catalyst
