@@ -170,6 +170,7 @@ class NGDTestCase(TestCase):
         self.assertDictEqual(
             json_response,
             {
+                "code": 401,
                 "description": "Missing or unsupported API key provided.",
                 "errorSource": "OS NGD API"
             }

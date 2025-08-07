@@ -98,5 +98,4 @@ jobs:
         run: |
           pip install requests==2.32.4
           pip install python-dotenv==1.1.1
-          ls
           python -m unittest unit_tests
