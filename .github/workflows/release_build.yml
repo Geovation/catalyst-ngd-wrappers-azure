@@ -1,0 +1,26 @@
+name: Release Build
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Prepare Azure Function artifact
+        run: |
+          mkdir -p azure_function_release
+          cp *.py azure_function_release/
+          cp requirements.txt azure_function_release/
+          cp host.json azure_function_release/
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-function-release
+          path: azure_function_release/
