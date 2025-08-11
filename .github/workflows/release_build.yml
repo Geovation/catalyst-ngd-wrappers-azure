@@ -25,6 +25,10 @@ jobs:
           name: azure-function-release
           path: azure_function_release/
 
+      - name: Test URL
+        run: |
+          echo "Testing url.."
+          echo ${{ github.event.release.upload_url }}
       - name: Upload asset to release
         uses: actions/upload-release-asset@v1
         env:
