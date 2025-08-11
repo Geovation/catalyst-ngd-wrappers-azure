@@ -24,6 +24,12 @@ jobs:
         with:
           name: azure-function-release
           path: azure_function_release/
+      
+      - name: Create release zip
+        run: |
+          cd azure_function_release
+          zip -r ../${{ github.event.release.tag_name }}-release.zip .
+          cd ..
 
       - name: Upload assets to release
         uses: actions/upload-release-asset@v1
@@ -31,6 +37,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: azure_function_release/*
+          asset_path: ${{ github.event.release.tag_name }}-release.zip
           asset_name: ${{ github.event.release.tag_name }}-release.zip
           asset_content_type: application/zip
