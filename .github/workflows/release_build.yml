@@ -25,12 +25,12 @@ jobs:
           name: azure-function-release
           path: azure_function_release/
 
-      - name: Upload asset to release
+      - name: Upload assets to release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: azure_function_release/
-          asset_name: azure_function_release
+          asset_path: azure_function_release/*
+          asset_name: ${{ github.event.release.tag_name }}-release.zip
           asset_content_type: application/zip
