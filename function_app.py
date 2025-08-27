@@ -17,12 +17,12 @@ from catalyst_ngd_wrappers.deployment_schemas import FeaturesBaseSchema, LimitSc
 from catalyst_ngd_wrappers.deployment_utils import BaseSerialisedRequest, handle_error, \
     construct_features_response, construct_collections_response
 
-#load_dotenv()
-#CLIENT_ID = os.environ.get('CLIENT_ID', '')
-#CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '')
+load_dotenv()
+CLIENT_ID = os.environ.get('CLIENT_ID', '')
+CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '')
 
-#auth_level = func.AuthLevel.FUNCTION if CLIENT_ID or CLIENT_SECRET else func.AuthLevel.ANONYMOUS
-app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+auth_level = func.AuthLevel.FUNCTION if CLIENT_ID or CLIENT_SECRET else func.AuthLevel.ANONYMOUS
+app = func.FunctionApp(http_auth_level=auth_level)
 
 # configure_azure_monitor()
 
@@ -35,6 +35,7 @@ class AzureSerialisedRequest(BaseSerialisedRequest):
         method = req.method
         url = req.url
         params = {**req.params}
+        params.pop('code', None)
         route_params = req.route_params
         headers = req.headers.__dict__.get('__http_headers__', {})
         super().__init__(method, url, params, route_params, headers)
