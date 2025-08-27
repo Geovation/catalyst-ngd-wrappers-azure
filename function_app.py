@@ -1,4 +1,6 @@
 import json
+import os
+from dotenv import load_dotenv
 
 import azure.functions as func
 
@@ -15,7 +17,12 @@ from catalyst_ngd_wrappers.deployment_schemas import FeaturesBaseSchema, LimitSc
 from catalyst_ngd_wrappers.deployment_utils import BaseSerialisedRequest, handle_error, \
     construct_features_response, construct_collections_response
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+load_dotenv()
+CLIENT_ID = os.environ.get('CLIENT_ID', '')
+CLIENT_SECRET = os.environ.get('CLIENT_SECRET', '')
+
+auth_level = func.AuthLevel.FUNCTION if CLIENT_ID or CLIENT_SECRET else func.AuthLevel.ANONYMOUS
+app = func.FunctionApp(http_auth_level=auth_level)
 
 # configure_azure_monitor()
 
