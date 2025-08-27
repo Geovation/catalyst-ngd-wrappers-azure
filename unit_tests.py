@@ -4,7 +4,7 @@ import requests as r
 from dotenv import load_dotenv
 load_dotenv()
 
-BASE_URL = os.environ.get('BASE_URL', '')
+ROOT_URL = os.environ.get('ROOT_URL', '')
 KEY = os.environ.get('CLIENT_ID', '')
 GLOBAL_TIMEOUT = 20
 
@@ -13,7 +13,7 @@ class NGDTestCase(TestCase):
 
     def test_filter_combos(self):
         '''Test for the handling of a combination of "WKT" and "filter"'''
-        endpoint = BASE_URL + 'catalyst/features/bld-fts-building-4/items'
+        endpoint = ROOT_URL + 'catalyst/features/bld-fts-building-4/items'
         response = r.get(
             endpoint,
             params = {
@@ -31,7 +31,7 @@ class NGDTestCase(TestCase):
         This function sends a request with an unsupported query parameter and checks the response.
         It expects a 400 status code and specific error messages in the response.
         """
-        endpoint = BASE_URL + 'catalyst/features/lnd-fts-land-1/items'
+        endpoint = ROOT_URL + 'catalyst/features/lnd-fts-land-1/items'
         response = r.get(
             endpoint,
             params={'test': 'should-fail'},
@@ -61,7 +61,7 @@ class NGDTestCase(TestCase):
                 558288 104518, 558298 104528, 558398 104328, 558398 104318
             )
         )'''
-        endpoint = BASE_URL + 'catalyst/features/multi-collection/items/geom-col'
+        endpoint = ROOT_URL + 'catalyst/features/multi-collection/items/geom-col'
         response = r.get(
             endpoint,
             params = {
@@ -105,7 +105,7 @@ class NGDTestCase(TestCase):
         """Test for a non-hierarchical request to the NGD API.
         Various checks that the response is in the expected format.
         Includes handling of a mixture of version-specified and non-versioned collections with 'use-latest-collection'"""
-        endpoint = BASE_URL + 'catalyst/features/multi-collection/items/limit-col'
+        endpoint = ROOT_URL + 'catalyst/features/multi-collection/items/limit-col'
         response = r.get(
             endpoint,
             params = {
@@ -158,7 +158,7 @@ class NGDTestCase(TestCase):
         This function sends a request with an invalid key and checks the response.
         It expects a 401 status code and specific error messages in the response.
         '''
-        endpoint = BASE_URL + 'catalyst/features/lnd-fts-land-1/items'
+        endpoint = ROOT_URL + 'catalyst/features/lnd-fts-land-1/items'
         response = r.get(
             endpoint,
             params = {'authenticate': 'false'},
@@ -181,7 +181,7 @@ class NGDTestCase(TestCase):
         Tests that the response is in the expected format'''
 
         collection = 'lnd-fts-land'
-        endpoint = f'{BASE_URL}catalyst/latest-collections/{collection}'
+        endpoint = f'{ROOT_URL}catalyst/latest-collections/{collection}'
         response = r.get(
             endpoint,
             timeout = GLOBAL_TIMEOUT
@@ -197,7 +197,7 @@ class NGDTestCase(TestCase):
         '''Test for retrieving the latest collections.
         Tests that the response is in the expected format and contains the expected keys.'''
 
-        endpoint = BASE_URL + 'catalyst/latest-collections'
+        endpoint = ROOT_URL + 'catalyst/latest-collections'
         response = r.get(
             endpoint,
             params = {'recent-update-days': 28},
