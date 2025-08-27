@@ -35,6 +35,7 @@ class AzureSerialisedRequest(BaseSerialisedRequest):
         method = req.method
         url = req.url
         params = {**req.params}
+        params.pop('code', None)
         route_params = req.route_params
         headers = req.headers.__dict__.get('__http_headers__', {})
         super().__init__(method, url, params, route_params, headers)
