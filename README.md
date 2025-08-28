@@ -2,7 +2,7 @@
 
 This repository enables the deployment of Geovation Catalyst NGD Wrapper resources on Microsoft Azure.
 
-- For a process for automatically deploying the API and all the associated required Azure resources, refer to the docs on the [catalyst-deployment repository](https://github.com/Geovation/catalyst-deployment).
+- A template for automatically deploying the API and all the associated required Azure resources can be found at our [catalyst-deployment repository](https://github.com/Geovation/catalyst-deployment).
 - For the python package underlying the functionality of this deployment, see [catalyst-ngd-wrappers-python](https://github.com/Geovation/catalyst-ngd-wrappers-python).
 - For the correspond deployment tools for Amazon Web Services, see [catalyst-ngd-wrappers-aws](https://github.com/Geovation/catalyst-ngd-wrappers-aws).
 
@@ -151,9 +151,23 @@ graph TD
 - catalyst/features/multi-collection/items/limit-geom-col
 
 # Local Deployment with Azurite
+
 1. Create a .env file with OS DataHub account details, as specified in .env.sample
 3. Create .venv with _python -m venv .venv_ and activate with _source .venv/bin/activate_
 2. Install requirements with _pip install -r requirements.txt_
 3. Launch azurite, making sure you have Azurite installed within your virtual environment
 4. Launch the functions by navigating to the Azure folder and running _func start_.
 5. Access the development server on http://localhost:7071/api
+
+## Testing with unit_tests.py
+
+Once you have deployed the API, you can test the outputs using unit_tests.py.
+
+```python -m unittest unit_tests.py```
+
+You must make sure that the following [environment variables are configured correctly](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings) in the Function app environment. If you have used our [deployment template](https://github.com/Geovation/catalyst-deployment), then these environment variables will be configured automatically.
+
+- CLIENT_ID = _your-datahub-project-key_
+- ROOT_URL = 'https://_your-ngd-wrapper-function-name_.azurewebsites.net/api'
+
+If any issues arise in this process, then please raise an issue to let us know. We welcome any feedback.
