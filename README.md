@@ -133,7 +133,7 @@ graph TD
 ## Available endpoints resulting from extension combinations
 
 - Make sure to prefix the endpoints below with one of the following
-    - Cloud server: https://catalyst-ngd-wrapper-functions.azurewebsites.net/api/
+    - Cloud server: https://**_your-ngd-wrapper-function-name_**.azurewebsites.net/api/
     - Local azurite deployment: http://localhost:7071/api/
 
 - catalyst/latest-collections
