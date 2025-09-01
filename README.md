@@ -26,8 +26,8 @@ graph TD
 ## OS NGD API - Features
 
 - All the Catalyst APIs extend the core functionality of GET request for items using the OS NGD API - Features
-    - The endpoint for this API is https://api.os.uk/features/ngd/ofa/v1/collections/{collectionId}/items
-    - Documentation for the API can be found on the [Gitbook docs for the National Geographic Database (NGD)](https://docs.os.uk/osngd/accessing-os-ngd/access-the-os-ngd-api/os-ngd-api-features/technical-specification)
+    - The endpoint for this API is https://api.os.uk/features/ngd/ofa/v1/collections/{collectionId}/items.
+    - Documentation for the API can be found on the [Gitbook docs for the National Geographic Database (NGD)](https://docs.os.uk/osngd/accessing-os-ngd/access-the-os-ngd-api/os-ngd-api-features/technical-specification).
 
 ## Authentication
 - **API Key**
@@ -59,11 +59,8 @@ graph TD
         This is because, if features overlap multiple search areas, duplicates are removed after the limit is reached.
     - **offset**: int - Not available when used with the _limit_ extension 
 - **Additional Catalyst Query Parameters**
-    - **filter_params**: str (dict) - OS NGD attribute filters to pass to the query within the _filter_ query parameter. The can be used instead of or in addition to manually setting the filter in _query\_params_.
-    The key-value pairs will appended using the EQUAL TO [ = ] comparator. Any other CQL Operator comparisons must be set manually in query_params.
-    Queryable attributes can be found in OS NGD [codelists documentation](https://docs.os.uk/osngd/code-lists/code-lists-overview), or by inserting the relevant collectionId into the https://api.os.uk/features/ngd/ofa/v1/collections/{{collectionId}}/queryables endpoint.
     - **wkt**: str (well-known text) - A means of searching a geometry for features. The search area(s) must be supplied in wkt.
-    The function automatically composes the full INTERSECTS filter and adds it to the _filter_ query parameter. [How to write well-known text.](https://libgeos.org/specifications/wkt/)
+    The function automatically composes the full INTERSECTS filter and adds it to the _filter_ query parameter. Read how to write well-known text [here](https://libgeos.org/specifications/wkt/).
     Make sure that _filter-crs_ is set to the appropriate value.
     - **use-latest-collection** (bool, default False) - If True, it ensures that if a specific version of a collection is not supplied (eg. "bld-fts-building<s>-2</s>"), the latest version is used. If _use-latest-collection=True_ but the given collection does include a version, the specified version is always used regardless.
     - **request-limit**: int (default 50) - the number of OS NGD Feature requests at which to cap the Catalyst request. Consider [pricing](https://osdatahub.os.uk/plans).
