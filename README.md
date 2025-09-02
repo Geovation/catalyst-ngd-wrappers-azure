@@ -70,7 +70,7 @@ graph TD
     - **hierarchical-output**: bool, default False - If True, then results are returned in a hierarchical structure of GeoJSONs according to collection and/or search area, when the _col_ and _geom_ extensions are applied respectively.
     If False, results are returned as a single GeoJSON.
         - _geom_ and _col_ extensions only.
-    - **collections**: str (accepts multiple values)
+    - **collection**: str (accepts multiple values)
         - _col_ extension only.
     - **log-request-details**: bool, default True - _Currently unimplemented_
 
