@@ -162,7 +162,7 @@ Once you have deployed the API, you can test the outputs using unit_tests.py.
 
 ```python -m unittest unit_tests.py```
 
-You must make sure that the following [environment variables are configured correctly](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings) in the Function app environment. If you have used our [deployment template](https://github.com/Geovation/catalyst-deployment), then these environment variables will be configured automatically.
+You must make sure that the following [environment variables are configured correctly](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings?#settings) in the Function app environment. If you have used our [deployment template](https://github.com/Geovation/catalyst-deployment), then these environment variables will be configured automatically.
 
 - CLIENT_ID = **_your-datahub-project-key_**
 - ROOT_URL = 'https://**_your-ngd-wrapper-function-name_**.azurewebsites.net/api'
