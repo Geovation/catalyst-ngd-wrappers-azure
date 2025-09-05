@@ -30,14 +30,16 @@ graph TD
     - Documentation for the API can be found on the [Gitbook docs for the National Geographic Database (NGD)](https://docs.os.uk/osngd/accessing-os-ngd/access-the-os-ngd-api/os-ngd-api-features/technical-specification).
 
 ## Authentication
-- **API Key**
+- **OS API Key**
     - Requests can be authenticated using all the [OS NGD API - Features authentication methods](https://docs.os.uk/os-apis/core-concepts/authentication) (keys and access tokens). The methods are:
         - OAuth2 bearer token
         - HTTP Header key
         - HTTP Query Parameter key
-- **OAuth2 Environment Variables**
-    - If CLIENT_ID and CLIENT_SECRET are set as environment variables, the API handles OAuth2 authentication automatically, generating and reusing access tokens until they expire.
-    - CLIENT_ID should be set as the Project API Key value, and CLIENT_SECRET should be set as the Project API Secret value
+- **OS OAuth2 Environment Variables + Azure API Key**
+    - If CLIENT_ID and CLIENT_SECRET are set as environment variables in the production environment, the API handles OAuth2 authentication automatically, generating and reusing access tokens until they expire.
+    - If these are set, then access to the endpoints will be require a Function App access key, which can be found/generated from the Function App resource under 'Functions' > 'App keys'. This key must be passed to all API requests [either as a `x-functions-key` header, or as a `code` query parameter](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to?tabs=azure-portal#use-access-keys).
+    - You will also need to create a project on the [OS DataHub](https://osdatahub.os.uk/projects), and ensure that OS NGD API - Features is added to the project. CLIENT_ID should be set as the Project API Key value, and CLIENT_SECRET should be set as the Project API Secret value. 
+    - The variables can be set on the Azure portal from the Function App resource, under 'Settings' > 'Environment variables'.
 
 ## Request Specifications
 - **Path Parameters**
@@ -162,9 +164,10 @@ Once you have deployed the API, you can test the outputs using unit_tests.py.
 
 ```python -m unittest unit_tests.py```
 
-You must make sure that the following [environment variables are configured correctly](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings?#settings) in the Function app environment. If you have used our [deployment template](https://github.com/Geovation/catalyst-deployment), then these environment variables will be configured automatically.
+You must make sure that the following [environment variables are configured correctly](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings?#settings) in the testing environment. The function name is the name of the resource as displayed in the Azure portal. The Client ID can be found from your project on the OS DataHub (see Authentication docs above). The Azure Function App key is only required if you have configured OS OAuth2 environment variables. It can be found/generated from the Function App resource under 'Functions' > 'App keys'.
 
-- CLIENT_ID = **_your-datahub-project-key_**
-- ROOT_URL = 'https://**_your-ngd-wrapper-function-name_**.azurewebsites.net/api'
+- ROOT_URL = 'https://\<your-ngd-wrapper-function-name\>.azurewebsites.net/api'
+- CLIENT_ID = \<your-os-datahub-project-key\>
+- AZURE_APP_KEY = \<your-azure-function-app-key\>
 
 If any issues arise in this process, then please raise an issue to let us know. We welcome any feedback.
