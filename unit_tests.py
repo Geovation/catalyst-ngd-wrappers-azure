@@ -5,8 +5,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ROOT_URL = os.environ.get('ROOT_URL', '')
-KEY = os.environ.get('CLIENT_ID', '')
+OS_KEY = os.environ.get('CLIENT_ID', '')
+AZURE_KEY = os.environ.get('AZURE_APP_KEY', '')
 GLOBAL_TIMEOUT = 20
+
+HEADERS = {'x-functions-key': AZURE_KEY} if AZURE_KEY else {}
 
 class NGDTestCase(TestCase):
     '''Base class for NGD wrapper API tests.'''
@@ -21,6 +24,7 @@ class NGDTestCase(TestCase):
                 'filter': "buildinguse_oslandusetiera IN ('Residential Accommodation','Commercial Activity: Other')",
                 'log-request-details': True
             },
+            headers = HEADERS,
             timeout = GLOBAL_TIMEOUT
         )
         self.assertEqual(response.status_code, 200, response.text)
@@ -35,7 +39,7 @@ class NGDTestCase(TestCase):
         response = r.get(
             endpoint,
             params={'test': 'should-fail'},
-            headers = {'key': KEY},
+            headers = {'key': OS_KEY} | HEADERS,
             timeout = GLOBAL_TIMEOUT
         )
         self.assertEqual(response.status_code, 400, response.text)
@@ -74,8 +78,8 @@ class NGDTestCase(TestCase):
             },
             headers = {
                 'erroneous-header': 'should-be-ignored',
-                'key': KEY
-            },
+                'key': OS_KEY
+            } | HEADERS,
             timeout = GLOBAL_TIMEOUT
         )
         self.assertEqual(response.status_code, 200, response.text)
@@ -117,9 +121,10 @@ class NGDTestCase(TestCase):
                 ],
                 'use-latest-collection': True,
                 'limit': 213,
-                'key': KEY,
+                'key': OS_KEY,
                 'authenticate': False
             },
+            headers = HEADERS,
             timeout = GLOBAL_TIMEOUT
         )
         self.assertEqual(response.status_code, 200, response.text)
@@ -162,7 +167,7 @@ class NGDTestCase(TestCase):
         response = r.get(
             endpoint,
             params = {'authenticate': 'false'},
-            headers = {'key': 'invalid-key'},
+            headers = {'key': 'invalid-key'} | HEADERS,
             timeout = GLOBAL_TIMEOUT
         )
         self.assertEqual(response.status_code, 401, response.text)
@@ -184,6 +189,7 @@ class NGDTestCase(TestCase):
         endpoint = f'{ROOT_URL}catalyst/latest-collections/{collection}'
         response = r.get(
             endpoint,
+            headers = HEADERS,
             timeout = GLOBAL_TIMEOUT
         )
         self.assertEqual(response.status_code, 200, response.text)
@@ -201,7 +207,7 @@ class NGDTestCase(TestCase):
         response = r.get(
             endpoint,
             params = {'recent-update-days': 28},
-            headers = {'key': KEY}, # Isn't necessary, but should be ignored
+            headers = {'key': OS_KEY} | HEADERS, # OS_KEY isn't necessary, but should be ignored
             timeout = GLOBAL_TIMEOUT
         )
         self.assertEqual(response.status_code, 200, response.text)
