@@ -99,6 +99,7 @@ jobs:
 
       - name: Run Unit Tests
         env:
-          BASE_URL: ${{ secrets.AZURE_BASE_URL }}
+          ROOT_URL: ${{ secrets.AZURE_ROOT_URL }}
           CLIENT_ID: ${{ secrets.OS_DATAHUB_CLIENT_ID }}
+          AZURE_APP_KEY: ${{ secrets.AZURE_APP_KEY }}
         run: python -m unittest unit_tests
