@@ -166,8 +166,8 @@ Once you have deployed the API, you can test the outputs using unit_tests.py.
 
 You must make sure that the following [environment variables are configured correctly](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings?#settings) in the testing environment. The function name is the name of the resource as displayed in the Azure portal. The Client ID can be found from your project on the OS DataHub (see Authentication docs above). The Azure Function App key is only required if you have configured OS OAuth2 environment variables. It can be found/generated from the Function App resource under 'Functions' > 'App keys'.
 
-- ROOT_URL = 'https://\<your-ngd-wrapper-function-name\>.azurewebsites.net/api'
-- CLIENT_ID = \<your-os-datahub-project-key\>
-- AZURE_APP_KEY = \<your-azure-function-app-key\>
+- ROOT_URL = 'https://**\<your-ngd-wrapper-function-name\>**.azurewebsites.net/api'
+- CLIENT_ID = **\<your-os-datahub-project-key\>**
+- AZURE_APP_KEY = **\<your-azure-function-app-key\>**
 
 If any issues arise in this process, then please raise an issue to let us know. We welcome any feedback.
