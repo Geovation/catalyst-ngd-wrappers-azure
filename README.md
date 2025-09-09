@@ -140,7 +140,7 @@ graph TD
 
 - catalyst/latest-collections
 - catalyst/latest-collections/{collectionId}
-- catalyst/features/collections/{collectionId}/items
+- catalyst/features/{collectionId}/items
 - catalyst/features/{collectionId}/items/limit
 - catalyst/features/{collectionId}/items/geom
 - catalyst/features/multi-collection/items/col
